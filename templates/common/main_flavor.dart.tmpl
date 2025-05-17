@@ -1,0 +1,39 @@
+// Main application entry point for {{ FLAVOR }} flavor
+import 'package:flutter/material.dart';
+import 'app.dart';
+import 'di.dart';
+import 'flavors.dart';
+import 'firebase_options.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+  
+  // Initialize Firebase with flavor-specific options
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  
+  // Set the current flavor
+  F.appFlavor = Flavor.{{ FLAVOR }};
+  
+  // Initialize dependencies
+  await initDependencies();
+  
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en')],
+      path: 'assets/i18n',
+      fallbackLocale: const Locale('en'),
+      child: ScreenUtilInit(
+        designSize: const Size(375, 812),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (_, __) => const App(),
+      ),
+    ),
+  );
+}

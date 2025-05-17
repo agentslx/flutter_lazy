@@ -1,0 +1,42 @@
+part of 'auth_cubit.dart';
+
+enum AuthStatus {
+  initial,
+  loading,
+  authenticated,
+  unauthenticated,
+  passwordResetSent,
+  error,
+}
+
+class AuthState extends Equatable {
+  final AuthStatus status;
+  final UserModel? user;
+  final String? error;
+
+  const AuthState({
+    required this.status,
+    this.user,
+    this.error,
+  });
+
+  const AuthState.initial()
+      : status = AuthStatus.initial,
+        user = null,
+        error = null;
+
+  AuthState copyWith({
+    AuthStatus? status,
+    UserModel? user,
+    String? error,
+  }) {
+    return AuthState(
+      status: status ?? this.status,
+      user: user ?? this.user,
+      error: error ?? this.error,
+    );
+  }
+
+  @override
+  List<Object?> get props => [status, user, error];
+}

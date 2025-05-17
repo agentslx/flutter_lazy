@@ -1,0 +1,31 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+/// App-wide styling constants and utilities
+class AppStyles {
+  AppStyles._();
+
+  // Spacing
+  static final double screenPadding = 16.w;
+  static final double itemSpacing = 16.h;
+  static final double smallSpacing = 8.h;
+  static final double largeSpacing = 24.h;
+  
+  // Border radius
+  static final BorderRadius defaultRadius = BorderRadius.circular(8.r);
+  static final BorderRadius buttonRadius = BorderRadius.circular(16.r);
+  static final BorderRadius cardRadius = BorderRadius.circular(12.r);
+  
+  // Shadows
+  static List<BoxShadow> get defaultShadow => [
+    BoxShadow(
+      color: Colors.black.withOpacity(0.06),
+      blurRadius: 8,
+      offset: const Offset(0, 2),
+    ),
+  ];
+
+  // Animations
+  static const Duration defaultAnimationDuration = Duration(milliseconds: 250);
+  static const Curve defaultAnimationCurve = Curves.easeInOut;
+}

@@ -1,0 +1,116 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
+import '../data/repository/auth_repository.dart';
+
+part 'auth_state.dart';
+
+class AuthCubit extends Cubit<AuthState> {
+  final AuthRepository _authRepository;
+  
+  AuthCubit(this._authRepository) : super(const AuthState.initial());
+  
+  Future<void> login(String email, String password) async {
+    emit(state.copyWith(status: AuthStatus.loading));
+    
+    try {
+      final result = await _authRepository.login(email, password);
+      result.fold(
+        (failure) => emit(state.copyWith(
+          status: AuthStatus.error,
+          error: failure.message,
+        )),
+        (user) => emit(state.copyWith(
+          status: AuthStatus.authenticated,
+          user: user,
+        )),
+      );
+    } catch (e) {
+      emit(state.copyWith(
+        status: AuthStatus.error,
+        error: e.toString(),
+      ));
+    }
+  }
+  
+  Future<void> register(String name, String email, String password) async {
+    emit(state.copyWith(status: AuthStatus.loading));
+    
+    try {
+      final result = await _authRepository.register(name, email, password);
+      result.fold(
+        (failure) => emit(state.copyWith(
+          status: AuthStatus.error,
+          error: failure.message,
+        )),
+        (user) => emit(state.copyWith(
+          status: AuthStatus.authenticated,
+          user: user,
+        )),
+      );
+    } catch (e) {
+      emit(state.copyWith(
+        status: AuthStatus.error,
+        error: e.toString(),
+      ));
+    }
+  }
+  
+  Future<void> forgotPassword(String email) async {
+    emit(state.copyWith(status: AuthStatus.loading));
+    
+    try {
+      final result = await _authRepository.forgotPassword(email);
+      result.fold(
+        (failure) => emit(state.copyWith(
+          status: AuthStatus.error,
+          error: failure.message,
+        )),
+        (_) => emit(state.copyWith(
+          status: AuthStatus.passwordResetSent,
+        )),
+      );
+    } catch (e) {
+      emit(state.copyWith(
+        status: AuthStatus.error,
+        error: e.toString(),
+      ));
+    }
+  }
+  
+  Future<void> logout() async {
+    emit(state.copyWith(status: AuthStatus.loading));
+    
+    try {
+      final result = await _authRepository.logout();
+      result.fold(
+        (failure) => emit(state.copyWith(
+          status: AuthStatus.error,
+          error: failure.message,
+        )),
+        (_) => emit(const AuthState.initial()),
+      );
+    } catch (e) {
+      emit(state.copyWith(
+        status: AuthStatus.error,
+        error: e.toString(),
+      ));
+    }
+  }
+  
+  Future<void> checkAuthStatus() async {
+    emit(state.copyWith(status: AuthStatus.loading));
+    
+    try {
+      final result = await _authRepository.getCurrentUser();
+      result.fold(
+        (failure) => emit(const AuthState.initial()),
+        (user) => emit(state.copyWith(
+          status: AuthStatus.authenticated,
+          user: user,
+        )),
+      );
+    } catch (e) {
+      emit(const AuthState.initial());
+    }
+  }
+}

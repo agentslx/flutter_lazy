@@ -1,0 +1,134 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+
+import '../../../../generated/colors.gen.dart';
+import '../../data/models/{{ FEATURE_NAME_SNAKE }}_model.dart';
+
+class {{ FEATURE_NAME_PASCAL }}ItemWidget extends StatelessWidget {
+  const {{ FEATURE_NAME_PASCAL }}ItemWidget({
+    super.key,
+    required this.item,
+    this.onTap,
+    this.onEdit,
+    this.onDelete,
+  });
+
+  final {{ FEATURE_NAME_PASCAL }}Model item;
+  final VoidCallback? onTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.title,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (item.description.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            item.description,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert, color: ColorName.gray700),
+                    onSelected: (value) {
+                      if (value == 'edit' && onEdit != null) {
+                        onEdit!();
+                      } else if (value == 'delete' && onDelete != null) {
+                        onDelete!();
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.edit, size: 18),
+                            const SizedBox(width: 8),
+                            Text('common.edit'.tr()),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, size: 18, color: Theme.of(context).colorScheme.error),
+                            const SizedBox(width: 8),
+                            Text(
+                              'common.delete'.tr(),
+                              style: TextStyle(color: Theme.of(context).colorScheme.error),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    DateFormat.yMMMd().format(item.createdAt),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: ColorName.gray600,
+                        ),
+                  ),
+                  if (!item.isActive)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: ColorName.red100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'common.inactive'.tr(),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: ColorName.red500,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

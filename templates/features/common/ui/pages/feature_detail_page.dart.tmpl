@@ -1,0 +1,208 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formz/formz.dart';
+
+import '../../../../di.dart';
+import '../../../../widgets/app_containers/app_scaffold.dart';
+import '../../../../widgets/basic_components/app_buttons.dart';
+import '../../../../widgets/basic_components/app_snackbar.dart';
+import '../../cubits/{{ FEATURE_NAME_SNAKE }}_cubit/{{ FEATURE_NAME_SNAKE }}_cubit.dart';
+import '../../data/models/{{ FEATURE_NAME_SNAKE }}_model.dart';
+
+class {{ FEATURE_NAME_PASCAL }}DetailPage extends StatelessWidget {
+  const {{ FEATURE_NAME_PASCAL }}DetailPage({super.key, required this.id});
+
+  final String id;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider<{{ FEATURE_NAME_PASCAL }}Cubit>(
+      create: (_) => getIt<{{ FEATURE_NAME_PASCAL }}Cubit>()..loadItemDetails(id),
+      child: Builder(builder: (context) {
+        return BlocConsumer<{{ FEATURE_NAME_PASCAL }}Cubit, {{ FEATURE_NAME_PASCAL }}State>(
+          listenWhen: (previous, current) => 
+              previous.status != current.status ||
+              previous.errorMessage != current.errorMessage,
+          listener: (context, state) {
+            if (state.status == FormzSubmissionStatus.failure && state.errorMessage != null) {
+              AppSnackbar.error(
+                context: context,
+                message: state.errorMessage ?? tr('common.unknown_error'),
+              );
+            }
+          },
+          builder: (context, state) {
+            return AppScaffold(
+              appBar: AppBar(
+                title: Text('{{ FEATURE_NAME_SNAKE }}.detail_title'.tr()),
+              ),
+              body: _buildBody(context, state),
+            );
+          },
+        );
+      }),
+    );
+  }
+
+  Widget _buildBody(BuildContext context, {{ FEATURE_NAME_PASCAL }}State state) {
+    if (state.status == FormzSubmissionStatus.inProgress && state.selectedItem == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final item = state.selectedItem;
+    if (item == null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64),
+            const SizedBox(height: 16),
+            Text(
+              '{{ FEATURE_NAME_SNAKE }}.item_not_found'.tr(),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 24),
+            AppSecondaryButton(
+              label: 'common.go_back'.tr(),
+              onPressed: () => Navigator.pop(context),
+              size: AppButtonSize.medium,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header section
+          Text(
+            item.title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(
+                Icons.calendar_today,
+                size: 16,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                DateFormat.yMMMd().format(item.createdAt),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+          const Divider(height: 32),
+          
+          // Content section
+          Text(
+            '{{ FEATURE_NAME_SNAKE }}.description'.tr(),
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            item.description.isEmpty ? '{{ FEATURE_NAME_SNAKE }}.no_description'.tr() : item.description,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          
+          if (item.metadata != null && item.metadata!.isNotEmpty) ...[
+            const Divider(height: 32),
+            Text(
+              '{{ FEATURE_NAME_SNAKE }}.metadata'.tr(),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            ...item.metadata!.entries.map(
+              (entry) => Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${entry.key}: ',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        '${entry.value}',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          
+          const SizedBox(height: 32),
+          
+          // Action buttons
+          Row(
+            children: [
+              Expanded(
+                child: AppSecondaryButton(
+                  label: 'common.edit'.tr(),
+                  onPressed: () {
+                    // Edit functionality
+                    context.read<{{ FEATURE_NAME_PASCAL }}Cubit>().editItem(item);
+                  },
+                  size: AppButtonSize.medium,
+                  width: double.infinity,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: AppDestructiveButton(
+                  label: 'common.delete'.tr(),
+                  onPressed: () {
+                    _confirmDelete(context, item);
+                  },
+                  size: AppButtonSize.medium,
+                  width: double.infinity,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, {{ FEATURE_NAME_PASCAL }}Model item) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('{{ FEATURE_NAME_SNAKE }}.delete_item'.tr()),
+        content: Text('{{ FEATURE_NAME_SNAKE }}.delete_confirmation'.tr(args: [item.title])),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('common.cancel'.tr()),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              context.read<{{ FEATURE_NAME_PASCAL }}Cubit>().deleteItem(item.id);
+              Navigator.pop(ctx);
+              Navigator.pop(context); // Return to list page
+            },
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white, 
+              backgroundColor: Colors.red,
+            ),
+            child: Text('common.delete'.tr()),
+          ),
+        ],
+      ),
+    );
+  }
+}

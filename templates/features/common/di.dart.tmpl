@@ -1,0 +1,33 @@
+import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'cubits/{{ FEATURE_NAME_SNAKE }}_cubit/{{ FEATURE_NAME_SNAKE }}_cubit.dart';
+import 'data/datasources/{{ FEATURE_NAME_SNAKE }}_local_datasource.dart';
+import 'data/datasources/{{ FEATURE_NAME_SNAKE }}_remote_datasource.dart';
+import 'data/repository/{{ FEATURE_NAME_SNAKE }}_repository.dart';
+
+Future<void> init{{ FEATURE_NAME_PASCAL }}Di(GetIt getIt) async {
+  // Register data sources
+  getIt
+    ..registerFactory<{{ FEATURE_NAME_PASCAL }}RemoteDatasource>(
+      () => {{ FEATURE_NAME_PASCAL }}RemoteDatasourceImpl(
+        dio: getIt<Dio>(),
+      ),
+    )
+    ..registerFactory<{{ FEATURE_NAME_PASCAL }}LocalDatasource>(
+      () => {{ FEATURE_NAME_PASCAL }}LocalDatasourceImpl(
+        sharedPreferences: getIt<SharedPreferences>(),
+      ),
+    );
+  
+  // Register repositories
+  getIt.registerFactory<{{ FEATURE_NAME_PASCAL }}Repository>(
+    () => {{ FEATURE_NAME_PASCAL }}RepositoryImpl(),
+  );
+  
+  // Register cubits
+  getIt.registerFactory<{{ FEATURE_NAME_PASCAL }}Cubit>(
+    () => {{ FEATURE_NAME_PASCAL }}Cubit(),
+  );
+}

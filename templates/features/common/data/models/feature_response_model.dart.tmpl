@@ -1,0 +1,62 @@
+import 'package:json_annotation/json_annotation.dart';
+
+import '{{ FEATURE_NAME_SNAKE }}_model.dart';
+
+part '{{ FEATURE_NAME_SNAKE }}_response_model.g.dart';
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class {{ FEATURE_NAME_PASCAL }}ResponseModel {
+  {{ FEATURE_NAME_PASCAL }}ResponseModel({
+    required this.status,
+    required this.message,
+    required this.data,
+  });
+
+  factory {{ FEATURE_NAME_PASCAL }}ResponseModel.fromJson(Map<String, dynamic> json) => 
+      _${{ FEATURE_NAME_PASCAL }}ResponseModelFromJson(json);
+
+  final String status;
+  final String message;
+  final {{ FEATURE_NAME_PASCAL }}Model data;
+
+  Map<String, dynamic> toJson() => _${{ FEATURE_NAME_PASCAL }}ResponseModelToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class {{ FEATURE_NAME_PASCAL }}ListResponseModel {
+  {{ FEATURE_NAME_PASCAL }}ListResponseModel({
+    required this.status,
+    required this.message,
+    required this.data,
+    this.meta,
+  });
+
+  factory {{ FEATURE_NAME_PASCAL }}ListResponseModel.fromJson(Map<String, dynamic> json) => 
+      _${{ FEATURE_NAME_PASCAL }}ListResponseModelFromJson(json);
+
+  final String status;
+  final String message;
+  final List<{{ FEATURE_NAME_PASCAL }}Model> data;
+  final MetaData? meta;
+
+  Map<String, dynamic> toJson() => _${{ FEATURE_NAME_PASCAL }}ListResponseModelToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class MetaData {
+  MetaData({
+    required this.currentPage,
+    required this.lastPage,
+    required this.perPage,
+    required this.total,
+  });
+
+  factory MetaData.fromJson(Map<String, dynamic> json) => _$MetaDataFromJson(json);
+
+  final int currentPage;
+  final int lastPage;
+  final int perPage;
+  final int total;
+
+  Map<String, dynamic> toJson() => _$MetaDataToJson(this);
+}

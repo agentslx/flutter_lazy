@@ -1,0 +1,20 @@
+[package]
+name = "flutter_lazy"
+version = "0.1.0"
+edition = "2021"
+description = "A CLI tool to generate Flutter project with predefined architecture"
+authors = ["Your Name <your.email@example.com>"]
+
+[dependencies]
+clap = { version = "4.4", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tera = "1.19"
+dialoguer = "0.11"
+console = "0.15"
+indicatif = "0.17"
+regex = "1.10"
+anyhow = "1.0"
+fs_extra = "1.3"
+walkdir = "2.4"
+convert_case = "0.6"

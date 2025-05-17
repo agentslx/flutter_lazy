@@ -1,0 +1,12 @@
+import '../../../../models/failures/failure.dart';
+import 'enums.dart';
+
+class {{ FEATURE_NAME_PASCAL }}Failure extends Failure {
+  const {{ FEATURE_NAME_PASCAL }}Failure({
+    required super.message,
+    super.code,
+    required this.result,
+  });
+
+  final {{ FEATURE_NAME_PASCAL }}Result result;
+}

@@ -1,0 +1,176 @@
+import 'dart:developer';
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:logger/logger.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+
+import '../../../../di.dart';
+import '../../../../helpers/error_helper.dart';
+import '../../../../models/failures/failure.dart';
+import '../datasources/{{ FEATURE_NAME_SNAKE }}_local_datasource.dart';
+import '../datasources/{{ FEATURE_NAME_SNAKE }}_remote_datasource.dart';
+import '../models/{{ FEATURE_NAME_SNAKE }}_model.dart';
+import '../models/failure.dart';
+
+abstract class {{ FEATURE_NAME_PASCAL }}Repository {
+  /// Gets data from the {{ FEATURE_NAME_PASCAL }} feature
+  ///
+  /// Returns [{{ FEATURE_NAME_PASCAL }}Model] if successful
+  /// Returns [Failure] if an error occurs
+  Future<Either<Failure, {{ FEATURE_NAME_PASCAL }}Model>> getData();
+  
+  /// Creates a new {{ FEATURE_NAME_PASCAL }} item
+  ///
+  /// Returns the created [{{ FEATURE_NAME_PASCAL }}Model] if successful
+  /// Returns [Failure] if an error occurs
+  Future<Either<Failure, {{ FEATURE_NAME_PASCAL }}Model>> create{{ FEATURE_NAME_PASCAL }}({
+    required String title,
+    required String description,
+  });
+  
+  /// Updates an existing {{ FEATURE_NAME_PASCAL }} item
+  ///
+  /// Returns the updated [{{ FEATURE_NAME_PASCAL }}Model] if successful
+  /// Returns [{{ FEATURE_NAME_PASCAL }}Failure] if an error occurs
+  Future<Either<{{ FEATURE_NAME_PASCAL }}Failure, {{ FEATURE_NAME_PASCAL }}Model>> update{{ FEATURE_NAME_PASCAL }}({
+    required String id,
+    required String title,
+    required String description,
+  });
+  
+  /// Deletes a {{ FEATURE_NAME_PASCAL }} item
+  ///
+  /// Returns void if successful
+  /// Returns [Failure] if an error occurs
+  Future<Either<Failure, void>> delete{{ FEATURE_NAME_PASCAL }}(String id);
+}
+
+class {{ FEATURE_NAME_PASCAL }}RepositoryImpl implements {{ FEATURE_NAME_PASCAL }}Repository {
+  {{ FEATURE_NAME_PASCAL }}RepositoryImpl();
+
+  final {{ FEATURE_NAME_PASCAL }}RemoteDatasource _remoteDatasource = getIt();
+  final {{ FEATURE_NAME_PASCAL }}LocalDatasource _localDatasource = getIt();
+  final Logger logger = Logger();
+
+  @override
+  Future<Either<Failure, {{ FEATURE_NAME_PASCAL }}Model>> getData() async {
+    try {
+      // First try to get data from local cache
+      final localData = await _localDatasource.get{{ FEATURE_NAME_PASCAL }}Data();
+      
+      if (localData != null) {
+        return Right(localData);
+      }
+      
+      // If local data is not available, fetch from remote
+      final remoteData = await _remoteDatasource.fetch{{ FEATURE_NAME_PASCAL }}Data();
+      
+      // Cache the remote data locally for future use
+      await _localDatasource.save{{ FEATURE_NAME_PASCAL }}Data(remoteData);
+      
+      return Right(remoteData);
+    } catch (e, stackTrace) {
+      log('🐞Error: $e', stackTrace: stackTrace);
+      return Left(
+        ErrorHelper.errorToFailure(e, stacktrace: stackTrace),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, {{ FEATURE_NAME_PASCAL }}Model>> create{{ FEATURE_NAME_PASCAL }}({
+    required String title,
+    required String description,
+  }) async {
+    try {
+      final result = await _remoteDatasource.create{{ FEATURE_NAME_PASCAL }}({
+        'title': title,
+        'description': description,
+      });
+      
+      // Update local cache with the new item
+      await _localDatasource.save{{ FEATURE_NAME_PASCAL }}Item(result);
+      
+      return Right(result);
+    } catch (e, stackTrace) {
+      log('🐞Error: $e', stackTrace: stackTrace);
+      return Left(
+        ErrorHelper.errorToFailure(e, stacktrace: stackTrace),
+      );
+    }
+  }
+
+  @override
+  Future<Either<{{ FEATURE_NAME_PASCAL }}Failure, {{ FEATURE_NAME_PASCAL }}Model>> update{{ FEATURE_NAME_PASCAL }}({
+    required String id,
+    required String title,
+    required String description,
+  }) async {
+    try {
+      final result = await _remoteDatasource.update{{ FEATURE_NAME_PASCAL }}(
+        id: id,
+        data: {
+          'title': title,
+          'description': description,
+        },
+      );
+      
+      // Update local cache with the updated item
+      await _localDatasource.update{{ FEATURE_NAME_PASCAL }}Item(result);
+      
+      return Right(result);
+    } on DioException catch (e) {
+      logger.e('DioException: ${e.message}');
+      final resData = e.response?.data as Map<String, dynamic>?;
+      final error = resData == null ? null : Failure.fromJson(resData);
+      
+      if (e.response?.statusCode == 404) {
+        return Left(
+          {{ FEATURE_NAME_PASCAL }}Failure(
+            message: error?.message ?? 'Item not found',
+            code: e.response?.statusCode ?? 404,
+            result: {{ FEATURE_NAME_PASCAL }}Result.notFound,
+          ),
+        );
+      }
+      
+      return Left(
+        {{ FEATURE_NAME_PASCAL }}Failure(
+          message: error?.message ?? 'Failed to update item',
+          code: e.response?.statusCode ?? 500,
+          result: {{ FEATURE_NAME_PASCAL }}Result.failure,
+        ),
+      );
+    } catch (e, stackTrace) {
+      logger.e('Error: $e', stackTrace: stackTrace);
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
+      
+      return Left(
+        {{ FEATURE_NAME_PASCAL }}Failure(
+          message: e.toString(),
+          result: {{ FEATURE_NAME_PASCAL }}Result.failure,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> delete{{ FEATURE_NAME_PASCAL }}(String id) async {
+    try {
+      await _remoteDatasource.delete{{ FEATURE_NAME_PASCAL }}(id);
+      
+      // Remove item from local cache
+      await _localDatasource.delete{{ FEATURE_NAME_PASCAL }}Item(id);
+      
+      return const Right(null);
+    } catch (e, stackTrace) {
+      log('🐞Error: $e', stackTrace: stackTrace);
+      return Left(
+        ErrorHelper.errorToFailure(e, stacktrace: stackTrace),
+      );
+    }
+  }
+}

@@ -1,0 +1,89 @@
+import 'package:flutter/material.dart';
+
+import '../../generated/colors.gen.dart';
+import 'app_text_theme.dart';
+
+/// App theme definition
+class AppTheme {
+  AppTheme._();
+  
+  /// Light theme
+  static ThemeData get lightTheme => ThemeData(
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: ColorName.primary,
+      primary: ColorName.primary,
+      secondary: ColorName.secondary,
+      background: ColorName.background,
+      error: ColorName.error,
+    ),
+    scaffoldBackgroundColor: ColorName.background,
+    textTheme: AppTextTheme.textTheme,
+    elevatedButtonTheme: _elevatedButtonTheme,
+    textButtonTheme: _textButtonTheme,
+    appBarTheme: _appBarTheme,
+    cardTheme: _cardTheme,
+    dialogTheme: _dialogTheme,
+  );
+  
+  /// Dark theme (if needed)
+  static ThemeData get darkTheme => ThemeData(
+    brightness: Brightness.dark,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: ColorName.primary,
+      primary: ColorName.primary,
+      secondary: ColorName.secondary,
+      brightness: Brightness.dark,
+      background: const Color(0xFF121212),
+    ),
+    textTheme: AppTextTheme.textTheme,
+  );
+  
+  // Button theme
+  static final _elevatedButtonTheme = ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: ColorName.primary,
+      foregroundColor: Colors.white,
+      textStyle: AppTextTheme.buttonText,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 16),
+    ),
+  );
+  
+  static final _textButtonTheme = TextButtonThemeData(
+    style: TextButton.styleFrom(
+      foregroundColor: ColorName.primary,
+      textStyle: AppTextTheme.buttonText,
+    ),
+  );
+  
+  // App bar theme
+  static final _appBarTheme = AppBarTheme(
+    backgroundColor: Colors.white,
+    foregroundColor: ColorName.textDark,
+    elevation: 0,
+    centerTitle: true,
+    titleTextStyle: AppTextTheme.titleMedium,
+  );
+  
+  // Card theme
+  static final _cardTheme = CardTheme(
+    color: Colors.white,
+    elevation: 2,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+  );
+  
+  // Dialog theme
+  static final _dialogTheme = DialogTheme(
+    backgroundColor: Colors.white,
+    elevation: 3,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+  );
+}

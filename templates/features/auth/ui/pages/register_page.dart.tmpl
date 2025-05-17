@@ -1,0 +1,154 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../cubits/auth_cubit.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../widgets/app_text_field.dart';
+import '../../../../widgets/app_button.dart';
+import 'package:easy_localization/easy_localization.dart';
+
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Register').tr(),
+      ),
+      body: BlocConsumer<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state.status == AuthStatus.authenticated) {
+            context.go('/home');
+          } else if (state.status == AuthStatus.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error ?? 'An error occurred'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 16),
+                    AppTextField(
+                      controller: _nameController,
+                      label: 'Name'.tr(),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your name'.tr();
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    AppTextField(
+                      controller: _emailController,
+                      label: 'Email'.tr(),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email'.tr();
+                        }
+                        if (!value.contains('@')) {
+                          return 'Please enter a valid email'.tr();
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    AppTextField(
+                      controller: _passwordController,
+                      label: 'Password'.tr(),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password'.tr();
+                        }
+                        if (value.length < 6) {
+                          return 'Password must be at least 6 characters'.tr();
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    AppTextField(
+                      controller: _confirmPasswordController,
+                      label: 'Confirm Password'.tr(),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password'.tr();
+                        }
+                        if (value != _passwordController.text) {
+                          return 'Passwords do not match'.tr();
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    AppButton(
+                      onPressed: state.status == AuthStatus.loading
+                          ? null
+                          : () {
+                              if (_formKey.currentState?.validate() ?? false) {
+                                context.read<AuthCubit>().register(
+                                      _nameController.text.trim(),
+                                      _emailController.text.trim(),
+                                      _passwordController.text,
+                                    );
+                              }
+                            },
+                      text: 'Register'.tr(),
+                      isLoading: state.status == AuthStatus.loading,
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Already have an account?'.tr()),
+                        TextButton(
+                          onPressed: () {
+                            context.pop();
+                          },
+                          child: const Text('Login').tr(),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

@@ -1,0 +1,95 @@
+import 'package:dio/dio.dart';
+
+import '../../../../di.dart';
+import '../models/{{ FEATURE_NAME_SNAKE }}_model.dart';
+import '../models/{{ FEATURE_NAME_SNAKE }}_response_model.dart';
+
+abstract class {{ FEATURE_NAME_PASCAL }}RemoteDatasource {
+  /// Fetch {{ FEATURE_NAME_PASCAL }} data from remote API
+  Future<{{ FEATURE_NAME_PASCAL }}Model> fetch{{ FEATURE_NAME_PASCAL }}Data();
+  
+  /// Create a new {{ FEATURE_NAME_PASCAL }} item
+  Future<{{ FEATURE_NAME_PASCAL }}Model> create{{ FEATURE_NAME_PASCAL }}(Map<String, dynamic> data);
+  
+  /// Update an existing {{ FEATURE_NAME_PASCAL }} item
+  Future<{{ FEATURE_NAME_PASCAL }}Model> update{{ FEATURE_NAME_PASCAL }}({
+    required String id,
+    required Map<String, dynamic> data,
+  });
+  
+  /// Delete a {{ FEATURE_NAME_PASCAL }} item
+  Future<void> delete{{ FEATURE_NAME_PASCAL }}(String id);
+}
+
+class {{ FEATURE_NAME_PASCAL }}RemoteDatasourceImpl implements {{ FEATURE_NAME_PASCAL }}RemoteDatasource {
+  {{ FEATURE_NAME_PASCAL }}RemoteDatasourceImpl({
+    Dio? dio,
+  }) : _dio = dio ?? getIt<Dio>();
+
+  final Dio _dio;
+  static const String _baseEndpoint = '/api/v1/{{ FEATURE_NAME_SNAKE }}';
+
+  @override
+  Future<{{ FEATURE_NAME_PASCAL }}Model> fetch{{ FEATURE_NAME_PASCAL }}Data() async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      _baseEndpoint,
+    );
+    
+    if (response.data == null) {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        error: 'No data received from server',
+        type: DioExceptionType.unknown,
+      );
+    }
+    
+    final responseModel = {{ FEATURE_NAME_PASCAL }}ResponseModel.fromJson(response.data!);
+    return responseModel.data;
+  }
+
+  @override
+  Future<{{ FEATURE_NAME_PASCAL }}Model> create{{ FEATURE_NAME_PASCAL }}(Map<String, dynamic> data) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      _baseEndpoint,
+      data: data,
+    );
+    
+    if (response.data == null) {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        error: 'No data received from server',
+        type: DioExceptionType.unknown,
+      );
+    }
+    
+    return {{ FEATURE_NAME_PASCAL }}Model.fromJson(response.data!['data']);
+  }
+  
+  @override
+  Future<{{ FEATURE_NAME_PASCAL }}Model> update{{ FEATURE_NAME_PASCAL }}({
+    required String id,
+    required Map<String, dynamic> data,
+  }) async {
+    final response = await _dio.put<Map<String, dynamic>>(
+      '$_baseEndpoint/$id',
+      data: data,
+    );
+    
+    if (response.data == null) {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        error: 'No data received from server',
+        type: DioExceptionType.unknown,
+      );
+    }
+    
+    return {{ FEATURE_NAME_PASCAL }}Model.fromJson(response.data!['data']);
+  }
+  
+  @override
+  Future<void> delete{{ FEATURE_NAME_PASCAL }}(String id) async {
+    await _dio.delete(
+      '$_baseEndpoint/$id',
+    );
+  }
+}

@@ -1,0 +1,105 @@
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../../di.dart';
+import '../models/{{ FEATURE_NAME_SNAKE }}_model.dart';
+
+abstract class {{ FEATURE_NAME_PASCAL }}LocalDatasource {
+  /// Get cached {{ FEATURE_NAME_PASCAL }} data from local storage
+  Future<{{ FEATURE_NAME_PASCAL }}Model?> get{{ FEATURE_NAME_PASCAL }}Data();
+  
+  /// Save {{ FEATURE_NAME_PASCAL }} data to local storage
+  Future<void> save{{ FEATURE_NAME_PASCAL }}Data({{ FEATURE_NAME_PASCAL }}Model data);
+  
+  /// Save a single {{ FEATURE_NAME_PASCAL }} item to local storage
+  Future<void> save{{ FEATURE_NAME_PASCAL }}Item({{ FEATURE_NAME_PASCAL }}Model item);
+  
+  /// Update a {{ FEATURE_NAME_PASCAL }} item in local storage
+  Future<void> update{{ FEATURE_NAME_PASCAL }}Item({{ FEATURE_NAME_PASCAL }}Model item);
+  
+  /// Delete a {{ FEATURE_NAME_PASCAL }} item from local storage
+  Future<void> delete{{ FEATURE_NAME_PASCAL }}Item(String id);
+  
+  /// Clear all {{ FEATURE_NAME_PASCAL }} data from local storage
+  Future<void> clear{{ FEATURE_NAME_PASCAL }}Data();
+}
+
+class {{ FEATURE_NAME_PASCAL }}LocalDatasourceImpl implements {{ FEATURE_NAME_PASCAL }}LocalDatasource {
+  {{ FEATURE_NAME_PASCAL }}LocalDatasourceImpl({
+    SharedPreferences? sharedPreferences,
+  }) : _prefs = sharedPreferences ?? getIt<SharedPreferences>();
+
+  final SharedPreferences _prefs;
+  
+  // Key constants for local storage
+  static const String _dataKey = '{{ FEATURE_NAME_SNAKE }}_data';
+  static const String _itemsKey = '{{ FEATURE_NAME_SNAKE }}_items';
+  static const String _lastFetchKey = '{{ FEATURE_NAME_SNAKE }}_last_fetch';
+
+  @override
+  Future<{{ FEATURE_NAME_PASCAL }}Model?> get{{ FEATURE_NAME_PASCAL }}Data() async {
+    final jsonStr = _prefs.getString(_dataKey);
+    if (jsonStr == null) {
+      return null;
+    }
+    
+    try {
+      final json = jsonDecode(jsonStr) as Map<String, dynamic>;
+      return {{ FEATURE_NAME_PASCAL }}Model.fromJson(json);
+    } catch (e) {
+      // If data is corrupted, clear it and return null
+      await clear{{ FEATURE_NAME_PASCAL }}Data();
+      return null;
+    }
+  }
+
+  @override
+  Future<void> save{{ FEATURE_NAME_PASCAL }}Data({{ FEATURE_NAME_PASCAL }}Model data) async {
+    await _prefs.setString(_dataKey, jsonEncode(data.toJson()));
+    await _prefs.setInt(_lastFetchKey, DateTime.now().millisecondsSinceEpoch);
+  }
+  
+  @override
+  Future<void> save{{ FEATURE_NAME_PASCAL }}Item({{ FEATURE_NAME_PASCAL }}Model item) async {
+    final Map<String, String> items = _getItems();
+    items[item.id] = jsonEncode(item.toJson());
+    await _prefs.setString(_itemsKey, jsonEncode(items));
+  }
+  
+  @override
+  Future<void> update{{ FEATURE_NAME_PASCAL }}Item({{ FEATURE_NAME_PASCAL }}Model item) async {
+    final Map<String, String> items = _getItems();
+    items[item.id] = jsonEncode(item.toJson());
+    await _prefs.setString(_itemsKey, jsonEncode(items));
+  }
+  
+  @override
+  Future<void> delete{{ FEATURE_NAME_PASCAL }}Item(String id) async {
+    final Map<String, String> items = _getItems();
+    items.remove(id);
+    await _prefs.setString(_itemsKey, jsonEncode(items));
+  }
+
+  @override
+  Future<void> clear{{ FEATURE_NAME_PASCAL }}Data() async {
+    await _prefs.remove(_dataKey);
+    await _prefs.remove(_itemsKey);
+    await _prefs.remove(_lastFetchKey);
+  }
+  
+  // Helper method to get stored items
+  Map<String, String> _getItems() {
+    final jsonStr = _prefs.getString(_itemsKey);
+    if (jsonStr == null) {
+      return <String, String>{};
+    }
+    
+    try {
+      final Map<String, dynamic> json = jsonDecode(jsonStr);
+      return json.map((key, value) => MapEntry(key, value as String));
+    } catch (e) {
+      return <String, String>{};
+    }
+  }
+}

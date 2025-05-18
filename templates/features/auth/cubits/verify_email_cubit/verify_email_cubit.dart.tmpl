@@ -1,0 +1,42 @@
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import '../../data/repository/auth_repository.dart';
+
+part 'verify_email_state.dart';
+
+class VerifyEmailCubit extends Cubit<VerifyEmailState> {
+  final AuthRepository _authRepository;
+
+  VerifyEmailCubit(this._authRepository) : super(const VerifyEmailState());
+
+  void verifyEmail(String code) async {
+    emit(state.copyWith(status: VerifyEmailStatus.loading));
+    
+    try {
+      await _authRepository.verifyEmail(code);
+      emit(state.copyWith(status: VerifyEmailStatus.success));
+    } catch (e) {
+      emit(state.copyWith(
+        status: VerifyEmailStatus.error, 
+        error: e.toString(),
+      ));
+    }
+  }
+  
+  void resendVerificationCode() async {
+    emit(state.copyWith(status: VerifyEmailStatus.loading));
+    
+    try {
+      await _authRepository.resendVerificationCode();
+      emit(state.copyWith(
+        status: VerifyEmailStatus.codeSent,
+        message: 'Verification code sent successfully',
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        status: VerifyEmailStatus.error, 
+        error: e.toString(),
+      ));
+    }
+  }
+}

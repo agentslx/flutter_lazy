@@ -1,0 +1,113 @@
+// dart file: features/auth/cubits/register_cubit/register_cubit.dart.tmpl
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:formz/formz.dart';
+
+import '../../../../../core/form/email_input.dart';
+import '../../../../../core/form/name_input.dart';
+import '../../../../../core/form/password_input.dart';
+import '../../../../../core/form/confirmed_password_input.dart';
+import '../../data/repository/auth_repository.dart';
+
+part 'register_state.dart';
+
+class RegisterCubit extends Cubit<RegisterState> {
+  final AuthRepository _authRepository;
+
+  RegisterCubit(this._authRepository) : super(const RegisterState());
+
+  void nameChanged(String value) {
+    final name = NameInput.dirty(value);
+    emit(state.copyWith(
+      name: name,
+      status: Formz.validate([
+        name, 
+        state.email,
+        state.password,
+        state.confirmedPassword
+      ]),
+    ));
+  }
+
+  void emailChanged(String value) {
+    final email = EmailInput.dirty(value);
+    emit(state.copyWith(
+      email: email,
+      status: Formz.validate([
+        state.name,
+        email, 
+        state.password,
+        state.confirmedPassword
+      ]),
+    ));
+  }
+
+  void passwordChanged(String value) {
+    final password = PasswordInput.dirty(value);
+    final confirmedPassword = ConfirmedPasswordInput.dirty(
+      password: password.value,
+      value: state.confirmedPassword.value,
+    );
+    emit(state.copyWith(
+      password: password,
+      confirmedPassword: confirmedPassword,
+      status: Formz.validate([
+        state.name,
+        state.email, 
+        password,
+        confirmedPassword,
+      ]),
+    ));
+  }
+
+  void confirmedPasswordChanged(String value) {
+    final confirmedPassword = ConfirmedPasswordInput.dirty(
+      password: state.password.value,
+      value: value,
+    );
+    emit(state.copyWith(
+      confirmedPassword: confirmedPassword,
+      status: Formz.validate([
+        state.name,
+        state.email, 
+        state.password,
+        confirmedPassword,
+      ]),
+    ));
+  }
+
+  void termsAgreedChanged(bool value) {
+    emit(state.copyWith(
+      termsAgreed: value,
+      status: value 
+        ? Formz.validate([state.name, state.email, state.password, state.confirmedPassword]) 
+        : FormzStatus.invalid,
+    ));
+  }
+
+  Future<void> signUpFormSubmitted() async {
+    if (!state.status.isValidated || !state.termsAgreed) return;
+    emit(state.copyWith(status: FormzStatus.submissionInProgress));
+    
+    try {
+      final result = await _authRepository.register(
+        state.name.value,
+        state.email.value,
+        state.password.value,
+      );
+      
+      result.fold(
+        (failure) => emit(state.copyWith(
+          status: FormzStatus.submissionFailure,
+          errorMessage: failure.message,
+        )),
+        (_) => emit(state.copyWith(status: FormzStatus.submissionSuccess)),
+      );
+    } catch (e) {
+      emit(state.copyWith(
+        status: FormzStatus.submissionFailure,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+}

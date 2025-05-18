@@ -1,0 +1,84 @@
+// dart file: features/auth/cubits/login_cubit/login_cubit.dart.tmpl
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:formz/formz.dart';
+
+import '../../../../../core/form/email_input.dart';
+import '../../../../../core/form/password_input.dart';
+import '../../data/repository/auth_repository.dart';
+
+part 'login_state.dart';
+
+class LoginCubit extends Cubit<LoginState> {
+  final AuthRepository _authRepository;
+
+  LoginCubit(this._authRepository) : super(const LoginState());
+
+  void emailChanged(String value) {
+    final email = EmailInput.dirty(value);
+    emit(state.copyWith(
+      email: email,
+      status: Formz.validate([email, state.password]),
+    ));
+  }
+
+  void passwordChanged(String value) {
+    final password = PasswordInput.dirty(value);
+    emit(state.copyWith(
+      password: password,
+      status: Formz.validate([state.email, password]),
+    ));
+  }
+
+  Future<void> logInWithCredentials() async {
+    if (!state.status.isValidated) return;
+    emit(state.copyWith(status: FormzStatus.submissionInProgress));
+    try {
+      final result = await _authRepository.login(
+        state.email.value,
+        state.password.value,
+      );
+      
+      result.fold(
+        (failure) => emit(state.copyWith(
+          status: FormzStatus.submissionFailure,
+          errorMessage: failure.message,
+        )),
+        (_) => emit(state.copyWith(status: FormzStatus.submissionSuccess)),
+      );
+    } catch (e) {
+      emit(state.copyWith(
+        status: FormzStatus.submissionFailure,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+
+  Future<void> logInWithGoogle() async {
+    emit(state.copyWith(status: FormzStatus.submissionInProgress));
+    try {
+      // Add implementation when social login is available
+      await Future.delayed(const Duration(seconds: 1));
+      emit(state.copyWith(status: FormzStatus.submissionSuccess));
+    } catch (e) {
+      emit(state.copyWith(
+        status: FormzStatus.submissionFailure,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+
+  Future<void> logInWithApple() async {
+    emit(state.copyWith(status: FormzStatus.submissionInProgress));
+    try {
+      // Add implementation when social login is available
+      await Future.delayed(const Duration(seconds: 1));
+      emit(state.copyWith(status: FormzStatus.submissionSuccess));
+    } catch (e) {
+      emit(state.copyWith(
+        status: FormzStatus.submissionFailure,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+}

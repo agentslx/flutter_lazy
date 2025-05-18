@@ -1,0 +1,16 @@
+// dart file: core/form/name_input.dart.tmpl
+import 'package:formz/formz.dart';
+
+enum NameValidationError { empty, tooShort }
+
+class NameInput extends FormzInput<String, NameValidationError> {
+  const NameInput.pure() : super.pure('');
+  const NameInput.dirty([String value = '']) : super.dirty(value);
+
+  @override
+  NameValidationError? validator(String value) {
+    if (value.isEmpty) return NameValidationError.empty;
+    if (value.length < 2) return NameValidationError.tooShort;
+    return null;
+  }
+}

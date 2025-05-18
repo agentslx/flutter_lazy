@@ -15,8 +15,7 @@ use features::{
     create_feature, 
     create_auth_feature,
     create_notification_feature, 
-    create_main_page_feature,
-    create_welcome_back_feature
+    create_main_page_feature
 };
 
 #[derive(Parser)]
@@ -175,7 +174,6 @@ fn main() -> Result<()> {
                         "auth (specialized)", 
                         "notifications (specialized)", 
                         "main_page (specialized)",
-                        "welcome_back (specialized)",
                         "settings", 
                         "profile",
                         "payments",
@@ -187,10 +185,10 @@ fn main() -> Result<()> {
                     let selection = dialoguer::Select::new()
                         .with_prompt("Select feature type")
                         .items(&predefined_features)
-                        .default(8) // Default to custom
+                        .default(7) // Default to custom
                         .interact()?;
                     
-                    if selection == 8 { // Custom feature
+                    if selection == 7 { // Custom feature
                         dialoguer::Input::<String>::new()
                             .with_prompt("Enter feature name (e.g., auth, settings, profile)")
                             .validate_with(|input: &String| -> Result<(), String> {
@@ -210,7 +208,6 @@ fn main() -> Result<()> {
                             0 => "auth".to_string(),
                             1 => "notifications".to_string(),
                             2 => "main_page".to_string(),
-                            3 => "welcome_back".to_string(),
                             _ => feature.split_whitespace().next().unwrap_or(feature).to_string()
                         }
                     }
@@ -305,9 +302,6 @@ fn main() -> Result<()> {
                 },
                 "main_page" | "home" => {
                     create_main_page_feature(&project_dir)?;
-                },
-                "welcome_back" => {
-                    create_welcome_back_feature(&project_dir)?;
                 },
                 _ => {
                     // For all other features (including settings, profile, etc.), use the regular feature creation

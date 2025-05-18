@@ -1,0 +1,150 @@
+import 'package:flutter/material.dart';
+
+/// Helper class for image related operations throughout the app
+class ImageHelper {
+  /// Gets an appropriate placeholder based on the failure reason
+  static Widget getPlaceholder({
+    required double width,
+    required double height,
+    Color? color,
+    String? message,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      color: color ?? Colors.grey.shade200,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.image_not_supported,
+              size: width > height ? height * 0.3 : width * 0.3,
+              color: Colors.grey.shade400,
+            ),
+            if (message != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+  
+  /// Builds an image with error handling and placeholders
+  static Widget buildImage({
+    required String imageUrl,
+    required double width,
+    required double height,
+    BoxFit fit = BoxFit.cover,
+    Widget? placeholder,
+    Widget? errorWidget,
+    BorderRadius? borderRadius,
+  }) {
+    final defaultPlaceholder = getPlaceholder(width: width, height: height);
+    
+    Widget image = Image.network(
+      imageUrl,
+      width: width,
+      height: height,
+      fit: fit,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return placeholder ?? defaultPlaceholder;
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return errorWidget ?? getPlaceholder(
+          width: width,
+          height: height,
+          message: 'Failed to load image',
+        );
+      },
+    );
+    
+    if (borderRadius != null) {
+      image = ClipRRect(
+        borderRadius: borderRadius,
+        child: image,
+      );
+    }
+    
+    return image;
+  }
+}
+
+/// Helper class for UI related operations
+class UIHelper {
+  // Spacing constants
+  static const double xs = 4.0;
+  static const double sm = 8.0;
+  static const double md = 16.0;
+  static const double lg = 24.0;
+  static const double xl = 32.0;
+  static const double xxl = 48.0;
+
+  // Common vertical spacing widgets
+  static const Widget verticalSpaceXS = SizedBox(height: xs);
+  static const Widget verticalSpaceSM = SizedBox(height: sm);
+  static const Widget verticalSpaceMD = SizedBox(height: md);
+  static const Widget verticalSpaceLG = SizedBox(height: lg);
+  static const Widget verticalSpaceXL = SizedBox(height: xl);
+  static const Widget verticalSpaceXXL = SizedBox(height: xxl);
+
+  // Common horizontal spacing widgets
+  static const Widget horizontalSpaceXS = SizedBox(width: xs);
+  static const Widget horizontalSpaceSM = SizedBox(width: sm);
+  static const Widget horizontalSpaceMD = SizedBox(width: md);
+  static const Widget horizontalSpaceLG = SizedBox(width: lg);
+  static const Widget horizontalSpaceXL = SizedBox(width: xl);
+  static const Widget horizontalSpaceXXL = SizedBox(width: xxl);
+  
+  /// Helper for responsive sizing - returns different values based on screen size
+  static T responsiveValue<T>({
+    required BuildContext context,
+    required T mobile,
+    T? tablet,
+    T? desktop,
+  }) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    if (screenWidth >= 1200 && desktop != null) {
+      return desktop;
+    }
+    
+    if (screenWidth >= 600 && tablet != null) {
+      return tablet;
+    }
+    
+    return mobile;
+  }
+  
+  /// Shows a loading indicator dialog
+  static void showLoadingDialog(BuildContext context, {String? message}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              verticalSpaceMD,
+              Text(message ?? 'Loading...'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

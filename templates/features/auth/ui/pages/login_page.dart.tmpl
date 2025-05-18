@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../cubits/auth_cubit.dart';
+import '../../cubits/login_cubit/login_cubit.dart';
+import '../../cubits/login_cubit/login_state.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../widgets/app_text_field.dart';
 import '../../../../widgets/app_button.dart';
@@ -31,11 +32,11 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         title: const Text('Login').tr(),
       ),
-      body: BlocConsumer<AuthCubit, AuthState>(
+      body: BlocConsumer<LoginCubit, LoginState>(
         listener: (context, state) {
-          if (state.status == AuthStatus.authenticated) {
+          if (state.status == LoginStatus.success) {
             context.go('/home');
-          } else if (state.status == AuthStatus.error) {
+          } else if (state.status == LoginStatus.error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.error ?? 'An error occurred'),
@@ -53,33 +54,33 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 32),
-                  AppTextField(
-                    controller: _emailController,
-                    label: 'Email'.tr(),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email'.tr();
-                      }
-                      if (!value.contains('@')) {
-                        return 'Please enter a valid email'.tr();
-                      }
-                      return null;
+                  BlocBuilder<LoginCubit, LoginState>(
+                    buildWhen: (previous, current) => previous.email != current.email,
+                    builder: (context, state) {
+                      return AppTextField(
+                        controller: _emailController,
+                        label: 'Email'.tr(),
+                        keyboardType: TextInputType.emailAddress,
+                        errorText: state.email.displayError != null
+                            ? 'Please enter a valid email'.tr()
+                            : null,
+                        onChanged: (value) => context.read<LoginCubit>().emailChanged(value),
+                      );
                     },
                   ),
                   const SizedBox(height: 16),
-                  AppTextField(
-                    controller: _passwordController,
-                    label: 'Password'.tr(),
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password'.tr();
-                      }
-                      if (value.length < 6) {
-                        return 'Password must be at least 6 characters'.tr();
-                      }
-                      return null;
+                  BlocBuilder<LoginCubit, LoginState>(
+                    buildWhen: (previous, current) => previous.password != current.password,
+                    builder: (context, state) {
+                      return AppTextField(
+                        controller: _passwordController,
+                        label: 'Password'.tr(),
+                        obscureText: true,
+                        errorText: state.password.displayError != null
+                            ? 'Password must be at least 6 characters'.tr()
+                            : null,
+                        onChanged: (value) => context.read<LoginCubit>().passwordChanged(value),
+                      );
                     },
                   ),
                   const SizedBox(height: 8),
@@ -94,18 +95,13 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 24),
                   AppButton(
-                    onPressed: state.status == AuthStatus.loading
+                    onPressed: state.status == LoginStatus.loading || !state.isValid
                         ? null
                         : () {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              context.read<AuthCubit>().login(
-                                    _emailController.text.trim(),
-                                    _passwordController.text,
-                                  );
-                            }
+                            context.read<LoginCubit>().login();
                           },
                     text: 'Login'.tr(),
-                    isLoading: state.status == AuthStatus.loading,
+                    isLoading: state.status == LoginStatus.loading,
                   ),
                   const SizedBox(height: 16),
                   Row(

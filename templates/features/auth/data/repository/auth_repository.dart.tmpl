@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
-import '../../../../models/failure.dart';
+import '../../../../core/failures/failure.dart';
 import '../models/user_model.dart';
+import '../../../../modules/rest_module/restful_module.dart';
+import '../../../../modules/local_storage_module/local_storage_module.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, UserModel>> login(String email, String password);
@@ -8,6 +10,10 @@ abstract class AuthRepository {
   Future<Either<Failure, void>> forgotPassword(String email);
   Future<Either<Failure, void>> logout();
   Future<Either<Failure, UserModel>> getCurrentUser();
+  Future<Either<Failure, bool>> checkAuthenticated();
+  Future<Either<Failure, void>> verifyEmail(String code);
+  Future<Either<Failure, void>> resendVerificationCode();
+  Future<Either<Failure, void>> createPassword(String password);
 }
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -106,6 +112,58 @@ class AuthRepositoryImpl implements AuthRepository {
       return Right(user);
     } catch (e) {
       return Left(Failure('Failed to get current user: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkAuthenticated() async {
+    try {
+      final token = await _localStorageModule.getString('token');
+      return Right(token != null);
+    } catch (e) {
+      return Left(Failure('Failed to check authentication status: ${e.toString()}'));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, void>> verifyEmail(String code) async {
+    try {
+      await _restModule.post(
+        '/auth/verify-email',
+        data: {
+          'code': code,
+        },
+      );
+      
+      return const Right(null);
+    } catch (e) {
+      return Left(Failure('Email verification failed: ${e.toString()}'));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, void>> resendVerificationCode() async {
+    try {
+      await _restModule.post('/auth/resend-verification');
+      return const Right(null);
+    } catch (e) {
+      return Left(Failure('Failed to resend verification code: ${e.toString()}'));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, void>> createPassword(String password) async {
+    try {
+      await _restModule.post(
+        '/auth/create-password',
+        data: {
+          'password': password,
+        },
+      );
+      
+      return const Right(null);
+    } catch (e) {
+      return Left(Failure('Failed to create password: ${e.toString()}'));
     }
   }
 }

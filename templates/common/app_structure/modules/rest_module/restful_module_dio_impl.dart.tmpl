@@ -1,0 +1,413 @@
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:logger/logger.dart';
+
+import '../../config/env.dart';
+import '../../di.dart';
+import '../local_storage_module/local_storage_module.dart';
+import 'cancel_token.dart';
+import 'options.dart';
+import 'response.dart';
+import 'restful_module.dart';
+
+class RestfulModuleDioImpl implements RestfulModule {
+  final LocalStorageModule localStorageModule = getIt<LocalStorageModule>();
+  final Logger logger = Logger();
+
+  Dio? _dioInstance;
+  static const String _authTokenKey = 'auth_token';
+
+  Dio get _dio {
+    _dioInstance ??= _initDio();
+    return _dioInstance!;
+  }
+
+  Dio getDioClient() => _dio;
+
+  Dio _initDio() {
+    final dio = Dio()
+      ..options.baseUrl = AppEnv.apiBaseUrl
+      ..options.connectTimeout = const Duration(minutes: 5)
+      ..options.receiveTimeout = const Duration(minutes: 5)
+      ..options.headers = {'Content-Type': 'application/json; charset=utf-8'}
+      ..interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (
+            RequestOptions options,
+            RequestInterceptorHandler requestInterceptorHandler,
+          ) async {
+            if (options.headers['Authorization'] == 'false') {
+              options.headers.remove('Authorization');
+              return requestInterceptorHandler.next(options);
+            }
+            final authHeader = options.headers['Authorization'] as String?;
+            if (authHeader?.contains('Bearer') ?? false) {
+              return requestInterceptorHandler.next(options);
+            }
+            final String? token = await authToken;
+            if (token == null) {
+              return requestInterceptorHandler.next(options);
+            }
+            options.headers['Authorization'] = 'Bearer $token';
+            return requestInterceptorHandler.next(options);
+          },
+          onResponse: (
+            Response response,
+            ResponseInterceptorHandler responseInterceptorHandler,
+          ) {
+            return responseInterceptorHandler.next(response);
+          },
+          onError: (DioException e, ErrorInterceptorHandler handler) async {
+            if (e.response?.statusCode == 401) {
+              // Handle 401 Unauthorized error here
+              // For example, you might refresh the token or log the user out
+              log('401 Unauthorized error: ${e.message}');
+              await removeAuthToken();
+            }
+            return handler.next(e);
+          },
+        ),
+      );
+
+    if (kDebugMode) {
+      dio.interceptors.add(
+        LogInterceptor(
+          requestBody: true,
+          responseBody: true,
+          logPrint: (obj) {
+            log('DIO LOG: $obj');
+          },
+        ),
+      );
+    }
+    return dio;
+  }
+
+  @override
+  Future<void> init() async {
+    _dioInstance = _initDio();
+  }
+
+  @override
+  Future<String?> get authToken async {
+    return await localStorageModule.get<String>(_authTokenKey);
+  }
+
+  @override
+  Future<void> saveAuthToken(String authToken) async {
+    await localStorageModule.set(_authTokenKey, authToken);
+  }
+
+  @override
+  Future<void> removeAuthToken() async {
+    await localStorageModule.remove(_authTokenKey);
+  }
+
+  @override
+  Future<CommonResponse<T>> get<T>(
+    String uri, {
+    Map<String, dynamic>? query,
+    CommonRequestOptions? options,
+  }) async {
+    try {
+      final response = await _dio.get(
+        uri,
+        queryParameters: query,
+        options: _mapOptions(options),
+      );
+      return CommonResponse(
+        data: response.data as T,
+        statusCode: response.statusCode ?? 200,
+        headers: response.headers.map,
+      );
+    } catch (e) {
+      return _handleError<T>(e);
+    }
+  }
+
+  @override
+  Future<CommonResponse<T>> post<T>(
+    String uri, {
+    dynamic data,
+    Map<String, dynamic>? query,
+    CommonRequestOptions? options,
+  }) async {
+    try {
+      final response = await _dio.post(
+        uri,
+        data: data,
+        queryParameters: query,
+        options: _mapOptions(options),
+      );
+      return CommonResponse(
+        data: response.data as T,
+        statusCode: response.statusCode ?? 200,
+        headers: response.headers.map,
+      );
+    } catch (e) {
+      return _handleError<T>(e);
+    }
+  }
+
+  @override
+  Future<CommonResponse<T>> postMultipart<T>(
+    String uri,
+    Map<String, dynamic> formData, {
+    String? fileDataKey,
+    Stream<List<int>>? fileData,
+    Map<String, dynamic>? query,
+    CommonRequestOptions? options,
+    void Function(int sent, int total)? onSendProgress,
+    CommonCancelToken? cancelToken,
+  }) async {
+    try {
+      final dio = _dio;
+      final dioFormData = FormData();
+
+      for (var entry in formData.entries) {
+        if (entry.value != null) {
+          dioFormData.fields.add(MapEntry(entry.key, entry.value.toString()));
+        }
+      }
+
+      if (fileDataKey != null && fileData != null) {
+        final multipartFile = MultipartFile(
+          fileData,
+          filename: 'file',
+        );
+        dioFormData.files.add(MapEntry(fileDataKey, multipartFile));
+      }
+
+      final response = await dio.post(
+        uri,
+        data: dioFormData,
+        queryParameters: query,
+        options: _mapOptions(options),
+        onSendProgress: onSendProgress,
+        cancelToken: cancelToken != null ? CancelToken() : null,
+      );
+
+      return CommonResponse(
+        data: response.data as T,
+        statusCode: response.statusCode ?? 200,
+        headers: response.headers.map,
+      );
+    } catch (e) {
+      return _handleError<T>(e);
+    }
+  }
+
+  @override
+  Future<CommonResponse<T>> patchMultipart<T>(
+    String uri,
+    Map<String, dynamic> formData, {
+    String? fileDataKey,
+    Stream<List<int>>? fileData,
+    Map<String, dynamic>? query,
+    CommonRequestOptions? options,
+    void Function(int sent, int total)? onSendProgress,
+    CommonCancelToken? cancelToken,
+  }) async {
+    try {
+      final dio = _dio;
+      final dioFormData = FormData();
+
+      for (var entry in formData.entries) {
+        if (entry.value != null) {
+          dioFormData.fields.add(MapEntry(entry.key, entry.value.toString()));
+        }
+      }
+
+      if (fileDataKey != null && fileData != null) {
+        final multipartFile = MultipartFile(
+          fileData,
+          filename: 'file',
+        );
+        dioFormData.files.add(MapEntry(fileDataKey, multipartFile));
+      }
+
+      final response = await dio.patch(
+        uri,
+        data: dioFormData,
+        queryParameters: query,
+        options: _mapOptions(options),
+        onSendProgress: onSendProgress,
+        cancelToken: cancelToken != null ? CancelToken() : null,
+      );
+
+      return CommonResponse(
+        data: response.data as T,
+        statusCode: response.statusCode ?? 200,
+        headers: response.headers.map,
+      );
+    } catch (e) {
+      return _handleError<T>(e);
+    }
+  }
+
+  @override
+  Future<CommonResponse<T>> put<T>(
+    String uri, {
+    dynamic data,
+    Map<String, dynamic>? query,
+    CommonRequestOptions? options,
+  }) async {
+    try {
+      final response = await _dio.put(
+        uri,
+        data: data,
+        queryParameters: query,
+        options: _mapOptions(options),
+      );
+      return CommonResponse(
+        data: response.data as T,
+        statusCode: response.statusCode ?? 200,
+        headers: response.headers.map,
+      );
+    } catch (e) {
+      return _handleError<T>(e);
+    }
+  }
+
+  @override
+  Future<CommonResponse<T>> patch<T>(
+    String uri, {
+    dynamic data,
+    Map<String, dynamic>? query,
+    CommonRequestOptions? options,
+  }) async {
+    try {
+      final response = await _dio.patch(
+        uri,
+        data: data,
+        queryParameters: query,
+        options: _mapOptions(options),
+      );
+      return CommonResponse(
+        data: response.data as T,
+        statusCode: response.statusCode ?? 200,
+        headers: response.headers.map,
+      );
+    } catch (e) {
+      return _handleError<T>(e);
+    }
+  }
+
+  @override
+  Future<CommonResponse<T>> delete<T>(
+    String uri, {
+    dynamic data,
+    Map<String, dynamic>? query,
+    CommonRequestOptions? options,
+  }) async {
+    try {
+      final response = await _dio.delete(
+        uri,
+        data: data,
+        queryParameters: query,
+        options: _mapOptions(options),
+      );
+      return CommonResponse(
+        data: response.data as T,
+        statusCode: response.statusCode ?? 200,
+        headers: response.headers.map,
+      );
+    } catch (e) {
+      return _handleError<T>(e);
+    }
+  }
+
+  @override
+  void addInterceptor({
+    void Function(CommonRequestOptions options)? onRequest,
+    void Function(CommonResponse response)? onResponse,
+    void Function(Object error)? onError,
+    void Function()? onComplete,
+  }) {
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          if (onRequest != null) {
+            final commonOptions = CommonRequestOptions(
+              headers: options.headers,
+              followRedirects: options.followRedirects,
+              maxRedirects: options.maxRedirects,
+              receiveDataWhenStatusError: options.receiveDataWhenStatusError,
+            );
+            onRequest(commonOptions);
+          }
+          handler.next(options);
+        },
+        onResponse: (response, handler) {
+          if (onResponse != null) {
+            final commonResponse = CommonResponse(
+              data: response.data,
+              statusCode: response.statusCode ?? 200,
+              headers: response.headers.map,
+            );
+            onResponse(commonResponse);
+          }
+          handler.next(response);
+        },
+        onError: (dioError, handler) {
+          if (onError != null) {
+            onError(dioError);
+          }
+          handler.next(dioError);
+        },
+      ),
+    );
+  }
+
+  @override
+  void close({bool force = false}) {
+    _dio.close(force: force);
+    _dioInstance = null;
+  }
+
+  @override
+  CommonCancelToken createCancelToken() {
+    return CommonCancelToken();
+  }
+
+  @override
+  void cancel(CommonCancelToken token) {
+    // Implementation would depend on how you manage cancel tokens
+    // This is a simplified version
+  }
+
+  Options? _mapOptions(CommonRequestOptions? options) {
+    if (options == null) return null;
+    
+    return Options(
+      headers: options.headers,
+      followRedirects: options.followRedirects,
+      receiveDataWhenStatusError: options.receiveDataWhenStatusError,
+      validateStatus: options.validateStatus == true 
+          ? (status) => status != null && status >= 200 && status < 300
+          : null,
+      sendTimeout: options.sendTimeout,
+      receiveTimeout: options.receiveTimeout,
+    );
+  }
+
+  Future<CommonResponse<T>> _handleError<T>(Object error) {
+    if (error is DioException) {
+      logger.e('DioError: ${error.message}', error);
+      
+      if (error.response != null) {
+        return Future.value(CommonResponse<T>(
+          data: error.response!.data as T,
+          statusCode: error.response!.statusCode ?? 500,
+          headers: error.response!.headers.map,
+        ));
+      }
+    }
+    
+    // Generic error response
+    throw error;
+  }
+}

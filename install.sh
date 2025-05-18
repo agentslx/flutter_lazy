@@ -96,13 +96,17 @@ if [[ ! -w "$INSTALL_DIR" ]]; then
             # Global installation (requires sudo)
             display_step "Installing to $INSTALL_DIR..."
             sudo cp target/release/flutter_lazy "$INSTALL_DIR/" || error_exit "Failed to install to $INSTALL_DIR"
+            # Create symlink named flutter-lazy
+            sudo ln -sf "$INSTALL_DIR/flutter_lazy" "$INSTALL_DIR/flutter-lazy" || error_exit "Failed to create flutter-lazy symlink"
             echo -e "${GREEN}Installation complete!${NC}"
-            echo "You can now use the generator by running: flutter_lazy"
+            echo "You can now use the generator by running: flutter_lazy or flutter-lazy"
             ;;
         2)
             # User directory installation
             display_step "Installing to $ALT_INSTALL_DIR..."
             cp target/release/flutter_lazy "$ALT_INSTALL_DIR/" || error_exit "Failed to install to $ALT_INSTALL_DIR"
+            # Create symlink named flutter-lazy
+            ln -sf "$ALT_INSTALL_DIR/flutter_lazy" "$ALT_INSTALL_DIR/flutter-lazy" || error_exit "Failed to create flutter-lazy symlink"
             
             # Check if the directory is in PATH
             if [[ ":$PATH:" != *":$ALT_INSTALL_DIR:"* ]]; then
@@ -115,7 +119,7 @@ if [[ ! -w "$INSTALL_DIR" ]]; then
             fi
             
             echo -e "${GREEN}Installation complete!${NC}"
-            echo "You can now use the generator by running: flutter_lazy"
+            echo "You can now use the generator by running: flutter_lazy or flutter-lazy"
             ;;
         3)
             echo -e "${YELLOW}Installation skipped.${NC}"
@@ -133,8 +137,10 @@ else
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         display_step "Installing to $INSTALL_DIR..."
         cp target/release/flutter_lazy "$INSTALL_DIR/" || error_exit "Failed to install to $INSTALL_DIR"
+        # Create symlink named flutter-lazy
+        ln -sf "$INSTALL_DIR/flutter_lazy" "$INSTALL_DIR/flutter-lazy" || error_exit "Failed to create flutter-lazy symlink"
         echo -e "${GREEN}Installation complete!${NC}"
-        echo "You can now use the generator by running: flutter_lazy"
+        echo "You can now use the generator by running: flutter_lazy or flutter-lazy"
     else
         echo -e "${YELLOW}Installation skipped.${NC}"
         echo "You can run the generator manually from: $SCRIPT_DIR/target/release/flutter_lazy"
@@ -142,7 +148,7 @@ else
 fi
 
 display_step "Next steps:"
-echo "1. Run 'flutter_lazy new' to create a new Flutter project"
+echo "1. Run 'flutter_lazy new' or 'flutter-lazy new' to create a new Flutter project"
 echo "2. Follow the interactive prompts to configure your project"
 echo "3. Check the README for more advanced usage options"
 echo -e "\n${GREEN}Thank you for installing Flutter Lazy!${NC}"

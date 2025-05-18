@@ -1,0 +1,21 @@
+class CommonRequestOptions {
+  final Map<String, dynamic>? headers;
+  final bool? followRedirects;
+  final int? maxRedirects;
+  final bool? receiveDataWhenStatusError;
+  final bool? validateStatus;
+  final Duration? sendTimeout;
+  final Duration? receiveTimeout;
+  final Duration? connectTimeout;
+
+  CommonRequestOptions({
+    this.headers,
+    this.followRedirects,
+    this.maxRedirects,
+    this.receiveDataWhenStatusError,
+    this.validateStatus,
+    this.sendTimeout,
+    this.receiveTimeout,
+    this.connectTimeout,
+  });
+}

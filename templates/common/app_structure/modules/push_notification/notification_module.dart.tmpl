@@ -1,0 +1,162 @@
+// dart file: modules/push_notification/notification_module.dart
+import 'dart:async';
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+import '../../di.dart';
+
+Future<void> onBackgroundMessage(RemoteMessage message) async {
+  log('onBackgroundMessage: $message');
+  await Firebase.initializeApp();
+
+  final NotificationService notificationService = getIt<NotificationService>();
+  for (final callback in notificationService._onMessageCallbacks) {
+    callback(message);
+  }
+}
+
+class NotificationService {
+  NotificationService() {
+    init();
+  }
+
+  final initCompleter = Completer<void>();
+
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  final List<FutureOr<void> Function(RemoteMessage message)> _onMessageOpenedAppCallbacks = [];
+  final List<FutureOr<void> Function(RemoteMessage message)> _onMessageCallbacks = [];
+  final List<FutureOr<void> Function(String token)> _onTokenChangedCallbacks = [];
+
+  RemoteMessage? _initialMessage;
+
+  Future<RemoteMessage?> get initialMessage async {
+    if (!initCompleter.isCompleted) {
+      await initCompleter.future;
+    }
+    return _initialMessage;
+  }
+
+  Future<void> init() async {
+    final NotificationSettings settings = await _fcm.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      log('User granted permission');
+    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+      log('User granted provisional permission');
+    } else {
+      log('User declined or has not accepted permission');
+    }
+
+    FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      log('FCM Open from Message: $message');
+      for (final callback in _onMessageOpenedAppCallbacks) {
+        callback(message);
+      }
+    });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      log('FCM Message: ${message.data}');
+      for (final callback in _onMessageCallbacks) {
+        try {
+          callback(message);
+        } catch (e, s) {
+          log('Failed to call message callback');
+          log('$e\n$s');
+        }
+      }
+    });
+
+    if (Platform.isIOS) {
+      String? apnsToken = await _fcm.getAPNSToken();
+      if (apnsToken == null) {
+        await Future<void>.delayed(
+          const Duration(
+            seconds: 3,
+          ),
+        );
+        apnsToken = await _fcm.getAPNSToken();
+      }
+    }
+
+    _fcm.onTokenRefresh.listen((token) {
+      for (final callback in _onTokenChangedCallbacks) {
+        callback(token);
+      }
+    });
+
+    _initialMessage = await _fcm.getInitialMessage();
+
+    initCompleter.complete();
+  }
+
+  Future<void> subscribeOnMessage(void Function(RemoteMessage message) onMessage) async {
+    if (!initCompleter.isCompleted) {
+      await initCompleter.future;
+    }
+    _onMessageCallbacks.add(onMessage);
+  }
+
+  Future<void> subscribeOnMessageOpenedApp(void Function(RemoteMessage message) onMessage) async {
+    if (!initCompleter.isCompleted) {
+      await initCompleter.future;
+    }
+    _onMessageOpenedAppCallbacks.add(onMessage);
+    if (_initialMessage != null) {
+      onMessage(_initialMessage!);
+    }
+  }
+
+  Future<void> subscribeOnTokenChanged(void Function(String token) onTokenChanged) async {
+    _onTokenChangedCallbacks.add(onTokenChanged);
+    try {
+      // Also send the initial token
+      if (!initCompleter.isCompleted) {
+        await initCompleter.future;
+      }
+      onTokenChanged(await _fcm.getToken() ?? '');
+    } catch (e, s) {
+      log('Failed to get token');
+      log('$e\n$s');
+    }
+  }
+
+  void removeOnMessageListener(void Function(RemoteMessage) listener) => _onMessageCallbacks.remove(listener);
+
+  void removeOnMessageOpenAppListener(void Function(RemoteMessage) listener) =>
+      _onMessageOpenedAppCallbacks.remove(listener);
+
+  Future<void> refreshToken() async {
+    try {
+      if (!initCompleter.isCompleted) {
+        await initCompleter.future;
+      }
+      final String token = await _fcm.getToken() ?? '';
+      log('FCM Token: $token');
+      for (final callback in _onTokenChangedCallbacks) {
+        try {
+          callback(token);
+        } catch (e, s) {
+          log('Failed to call token changed callback');
+          log('$e\n$s');
+        }
+      }
+    } catch (e, s) {
+      log('Failed to get token');
+      log('$e\n$s');
+    }
+  }
+
+  void clearToken() => FirebaseMessaging.instance.deleteToken();
+}

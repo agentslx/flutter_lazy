@@ -1,0 +1,105 @@
+/// Custom exceptions for the application
+class AppException implements Exception {
+  final String message;
+  final int? code;
+  final Object? cause;
+  
+  const AppException(this.message, {this.code, this.cause});
+  
+  @override
+  String toString() {
+    String result = 'AppException: $message';
+    if (code != null) {
+      result += ' (code: $code)';
+    }
+    if (cause != null) {
+      result += '\nCause: $cause';
+    }
+    return result;
+  }
+}
+
+/// Network related exceptions
+class NetworkException extends AppException {
+  const NetworkException(String message, {int? code, Object? cause}) 
+      : super(message, code: code, cause: cause);
+}
+
+/// API related exceptions
+class ApiException extends AppException {
+  final Map<String, dynamic>? response;
+  
+  const ApiException(
+    String message, {
+    int? code,
+    this.response,
+    Object? cause,
+  }) : super(message, code: code, cause: cause);
+  
+  @override
+  String toString() {
+    String result = 'ApiException: $message';
+    if (code != null) {
+      result += ' (code: $code)';
+    }
+    if (response != null) {
+      result += '\nResponse: $response';
+    }
+    if (cause != null) {
+      result += '\nCause: $cause';
+    }
+    return result;
+  }
+}
+
+/// Authentication related exceptions
+class AuthException extends AppException {
+  const AuthException(String message, {int? code, Object? cause}) 
+      : super(message, code: code, cause: cause);
+}
+
+/// Cache related exceptions
+class CacheException extends AppException {
+  const CacheException(String message, {Object? cause}) 
+      : super(message, cause: cause);
+}
+
+/// Timeout exceptions
+class TimeoutException extends AppException {
+  final Duration? duration;
+  
+  const TimeoutException(String message, {this.duration, Object? cause}) 
+      : super(message, cause: cause);
+  
+  @override
+  String toString() {
+    String result = 'TimeoutException: $message';
+    if (duration != null) {
+      result += ' (duration: ${duration.toString()})';
+    }
+    if (cause != null) {
+      result += '\nCause: $cause';
+    }
+    return result;
+  }
+}
+
+/// Permission exceptions
+class PermissionException extends AppException {
+  final String? permission;
+  
+  const PermissionException(String message, {this.permission, Object? cause}) 
+      : super(message, cause: cause);
+  
+  @override
+  String toString() {
+    String result = 'PermissionException: $message';
+    if (permission != null) {
+      result += ' (permission: $permission)';
+    }
+    if (cause != null) {
+      result += '\nCause: $cause';
+    }
+    return result;
+  }
+}

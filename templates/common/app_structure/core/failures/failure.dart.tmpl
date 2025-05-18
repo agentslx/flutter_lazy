@@ -1,0 +1,72 @@
+import 'package:equatable/equatable.dart';
+
+/// Base failure class for the application
+abstract class Failure extends Equatable {
+  final String message;
+  final int? code;
+  
+  const Failure({required this.message, this.code});
+  
+  @override
+  List<Object?> get props => [message, code];
+}
+
+/// Server failure for API and backend related errors
+class ServerFailure extends Failure {
+  final Object? exception;
+  
+  const ServerFailure({
+    required String message,
+    int? code,
+    this.exception,
+  }) : super(message: message, code: code);
+  
+  @override
+  List<Object?> get props => [message, code, exception];
+}
+
+/// Cache failure for local storage errors
+class CacheFailure extends Failure {
+  const CacheFailure({required String message}) 
+      : super(message: message);
+}
+
+/// Network failure for connectivity issues
+class NetworkFailure extends Failure {
+  const NetworkFailure({String message = 'Network connection issue'}) 
+      : super(message: message);
+}
+
+/// Authentication failure for login/auth issues
+class AuthFailure extends Failure {
+  const AuthFailure({required String message, int? code}) 
+      : super(message: message, code: code);
+}
+
+/// Input validation failure
+class ValidationFailure extends Failure {
+  final Map<String, String>? fieldErrors;
+  
+  const ValidationFailure({
+    required String message,
+    this.fieldErrors,
+  }) : super(message: message);
+  
+  @override
+  List<Object?> get props => [message, fieldErrors];
+}
+
+/// Unexpected failure for unhandled errors
+class UnexpectedFailure extends Failure {
+  final Object? error;
+  final StackTrace? stackTrace;
+  
+  const UnexpectedFailure({
+    required String message,
+    this.error,
+    this.stackTrace,
+  }) : super(message: message);
+  
+  @override
+  List<Object?> get props => [message, error, stackTrace];
+}

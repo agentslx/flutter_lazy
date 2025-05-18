@@ -1,0 +1,99 @@
+/// Simple logger utility for app-wide logging
+class Logger {
+  // Log levels
+  static const int _verbose = 0;
+  static const int _debug = 1;
+  static const int _info = 2;
+  static const int _warning = 3;
+  static const int _error = 4;
+  
+  // Configuration
+  static int _level = _debug; // Default log level
+  static bool _showTime = true;
+  static bool _enabled = true;
+  
+  // Singleton instance
+  static final Logger _instance = Logger._internal();
+  factory Logger() => _instance;
+  Logger._internal();
+  
+  // Configuration methods
+  static void configure({
+    bool? enabled,
+    bool? showTime,
+    String? level,
+  }) {
+    if (enabled != null) _enabled = enabled;
+    if (showTime != null) _showTime = showTime;
+    if (level != null) {
+      switch (level.toLowerCase()) {
+        case 'verbose':
+          _level = _verbose;
+          break;
+        case 'debug':
+          _level = _debug;
+          break;
+        case 'info':
+          _level = _info;
+          break;
+        case 'warning':
+          _level = _warning;
+          break;
+        case 'error':
+          _level = _error;
+          break;
+      }
+    }
+  }
+  
+  // Logging methods
+  static void v(String tag, String message) {
+    _log(_verbose, tag, message);
+  }
+  
+  static void d(String tag, String message) {
+    _log(_debug, tag, message);
+  }
+  
+  static void i(String tag, String message) {
+    _log(_info, tag, message);
+  }
+  
+  static void w(String tag, String message) {
+    _log(_warning, tag, message);
+  }
+  
+  static void e(String tag, String message, {Object? error, StackTrace? stackTrace}) {
+    _log(_error, tag, message, error: error, stackTrace: stackTrace);
+  }
+  
+  // Internal logging implementation
+  static void _log(int level, String tag, String message, {Object? error, StackTrace? stackTrace}) {
+    if (!_enabled || level < _level) return;
+    
+    final timeStr = _showTime ? '[${DateTime.now().toString()}] ' : '';
+    final levelStr = _getLevelString(level);
+    
+    print('$timeStr$levelStr/$tag: $message');
+    if (error != null) print('Error: $error');
+    if (stackTrace != null) print('StackTrace: $stackTrace');
+  }
+  
+  // Helper to convert log level to string
+  static String _getLevelString(int level) {
+    switch (level) {
+      case _verbose:
+        return 'V';
+      case _debug:
+        return 'D';
+      case _info:
+        return 'I';
+      case _warning:
+        return 'W';
+      case _error:
+        return 'E';
+      default:
+        return '?';
+    }
+  }
+}

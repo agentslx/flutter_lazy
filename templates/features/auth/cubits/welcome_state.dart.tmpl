@@ -1,0 +1,26 @@
+part of 'welcome_cubit.dart';
+
+enum WelcomeStatus { initial, loading, authenticated, unauthenticated, guest, error }
+
+class WelcomeState extends Equatable {
+  final WelcomeStatus status;
+  final String? error;
+
+  const WelcomeState({
+    this.status = WelcomeStatus.initial,
+    this.error,
+  });
+
+  WelcomeState copyWith({
+    WelcomeStatus? status,
+    String? error,
+  }) {
+    return WelcomeState(
+      status: status ?? this.status,
+      error: error ?? this.error,
+    );
+  }
+
+  @override
+  List<Object?> get props => [status, error];
+}

@@ -9,12 +9,16 @@ class UserModel extends Equatable {
   final String name;
   final String email;
   final String? photoUrl;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   const UserModel({
     required this.id,
     required this.name,
     required this.email,
     this.photoUrl,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -23,5 +27,5 @@ class UserModel extends Equatable {
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 
   @override
-  List<Object?> get props => [id, name, email, photoUrl];
+  List<Object?> get props => [id, name, email, photoUrl, createdAt, updatedAt];
 }

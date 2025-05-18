@@ -1,0 +1,24 @@
+/// Extension methods for String
+extension StringExtensions on String {
+  // Case conversion
+  String get capitalize => isNotEmpty ? '${this[0].toUpperCase()}${substring(1)}' : '';
+  String get capitalizeEachWord => split(' ').map((word) => word.capitalize).join(' ');
+  String get camelCase => split('_').map((word) => word.capitalize).join('');
+  
+  // Validation helpers
+  bool get isValidEmail => RegExp(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+').hasMatch(this);
+  bool get isValidPassword => length >= 8;
+  bool get isValidPhoneNumber => RegExp(r'^\+?[0-9]{10,15}$').hasMatch(this);
+  bool get isValidUrl => RegExp(r'^(http|https)://[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(/\S*)?$').hasMatch(this);
+  
+  // String manipulation
+  String removeWhitespace() => replaceAll(RegExp(r'\s+'), '');
+  String truncate(int maxLength, {String suffix = '...'}) {
+    return length > maxLength ? '${substring(0, maxLength)}$suffix' : this;
+  }
+  
+  // Parsing helpers
+  int? toIntOrNull() => int.tryParse(this);
+  double? toDoubleOrNull() => double.tryParse(this);
+  bool toBool() => toLowerCase() == 'true';
+}

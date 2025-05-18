@@ -232,7 +232,7 @@ fn generate_feature_files(
         created_files.push(format!("- Router: {}", router_file.display()));
         
         // Update main router file to import this feature's router
-        let project_dir_path = feature_dir.parent().and_then(|f| f.parent()).unwrap_or(Path::new("."));
+        let project_dir_path = feature_dir.parent().and_then(|f| f.parent()).and_then(|f| f.parent()).unwrap_or(Path::new("."));
         update_main_router(project_dir_path, snake_name, pascal_name)?;
     }
     
@@ -247,7 +247,7 @@ fn generate_feature_files(
         created_files.push(format!("- DI: {}", di_file.display()));
         
         // Update main DI file to import this feature's DI
-        let project_dir_path = feature_dir.parent().and_then(|f| f.parent()).unwrap_or(Path::new("."));
+        let project_dir_path = feature_dir.parent().and_then(|f| f.parent()).and_then(|f| f.parent()).unwrap_or(Path::new("."));
         update_main_di(project_dir_path, snake_name)?;
     }
     
@@ -358,48 +358,4 @@ pub fn update_main_di(project_dir: &Path, feature_name: &str) -> Result<()> {
     Ok(())
 }
 
-// Helper function to create a welcome back feature
-pub fn create_welcome_back_feature(project_dir: &Path) -> Result<()> {
-    // Welcome back feature for returning users
-    let params = FeatureParams::new("welcome_back");
-    
-    // Check if the feature already exists
-    let feature_dir = project_dir.join("lib/features/welcome_back");
-    if feature_dir.exists() {
-        return Err(anyhow::anyhow!("Feature 'welcome_back' already exists at {:?}", feature_dir));
-    }
-    
-    // Standard feature creation
-    create_feature(project_dir, params)?;
-    
-    // Create welcome_back feature directory
-    let feature_dir = project_dir.join("lib/features/welcome_back");
-    
-    // Create UI components
-    fs::create_dir_all(feature_dir.join("ui/pages"))
-        .context("Failed to create welcome_back pages directory")?;
-    
-    fs::create_dir_all(feature_dir.join("ui/_widgets"))
-        .context("Failed to create welcome_back widgets directory")?;
-    
-    // Create welcome pages
-    let pages = ["welcome_back_page.dart", "offer_page.dart"];
-    for page in pages.iter() {
-        let page_path = feature_dir.join("ui/pages").join(page);
-        std::fs::write(&page_path, "// TODO: Implement welcome back page\n")
-            .context(format!("Failed to create page file: {}", page))?;
-    }
-    
-    // Create DI and router files
-    std::fs::write(feature_dir.join("di.dart"), 
-        "// Welcome back feature dependency injection\n")
-        .context("Failed to create welcome_back DI file")?;
-    
-    std::fs::write(feature_dir.join("router.dart"), 
-        "// Welcome back feature routes\n")
-        .context("Failed to create welcome_back router file")?;
-    
-    println!("✅ Welcome Back feature created successfully");
-    
-    Ok(())
-}
+// Welcome back feature has been removed

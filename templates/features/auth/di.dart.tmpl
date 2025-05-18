@@ -1,5 +1,10 @@
 import 'package:get_it/get_it.dart';
-import 'cubits/auth_cubit.dart';
+import 'cubits/login_cubit/login_cubit.dart';
+import 'cubits/register_cubit/register_cubit.dart';
+import 'cubits/forgot_password_cubit/forgot_password_cubit.dart';
+import 'cubits/verify_email_cubit/verify_email_cubit.dart';
+import 'cubits/create_password_cubit/create_password_cubit.dart';
+import 'cubits/welcome_cubit/welcome_cubit.dart';
 import 'data/repository/auth_repository.dart';
 
 Future<void> init(GetIt getIt) async {
@@ -12,5 +17,10 @@ Future<void> init(GetIt getIt) async {
   );
   
   // Cubits
-  getIt.registerFactory(() => AuthCubit(getIt()));
+  getIt.registerFactory(() => LoginCubit(getIt()));
+  getIt.registerFactory(() => RegisterCubit(getIt()));
+  getIt.registerFactory(() => ResetPasswordCubit(getIt()));
+  getIt.registerFactory(() => VerifyEmailCubit(getIt()));
+  getIt.registerFactory(() => CreatePasswordCubit(getIt()));
+  getIt.registerFactory(() => WelcomeCubit(getIt()));
 }

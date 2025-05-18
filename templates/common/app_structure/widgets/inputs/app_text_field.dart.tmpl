@@ -1,0 +1,178 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+/// Custom text field with consistent styling
+class AppTextField extends StatelessWidget {
+  final String label;
+  final String? hint;
+  final String? errorText;
+  final TextEditingController? controller;
+  final FocusNode? focusNode;
+  final TextInputType keyboardType;
+  final bool obscureText;
+  final TextInputAction textInputAction;
+  final Function(String)? onChanged;
+  final Function(String)? onSubmitted;
+  final List<TextInputFormatter>? inputFormatters;
+  final IconData? prefixIcon;
+  final Widget? suffix;
+  final int? maxLines;
+  final int? maxLength;
+  final bool readOnly;
+  final VoidCallback? onTap;
+  
+  const AppTextField({
+    Key? key,
+    required this.label,
+    this.hint,
+    this.errorText,
+    this.controller,
+    this.focusNode,
+    this.keyboardType = TextInputType.text,
+    this.obscureText = false,
+    this.textInputAction = TextInputAction.next,
+    this.onChanged,
+    this.onSubmitted,
+    this.inputFormatters,
+    this.prefixIcon,
+    this.suffix,
+    this.maxLines = 1,
+    this.maxLength,
+    this.readOnly = false,
+    this.onTap,
+  }) : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: theme.colorScheme.onSurface.withOpacity(0.8),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          focusNode: focusNode,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          textInputAction: textInputAction,
+          onChanged: onChanged,
+          onSubmitted: onSubmitted,
+          inputFormatters: inputFormatters,
+          maxLines: maxLines,
+          maxLength: maxLength,
+          readOnly: readOnly,
+          onTap: onTap,
+          decoration: InputDecoration(
+            hintText: hint,
+            errorText: errorText,
+            prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+            suffix: suffix,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: theme.colorScheme.outline,
+                width: 1.0,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: theme.colorScheme.outline,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary,
+                width: 1.5,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: theme.colorScheme.error,
+                width: 1.0,
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
+            filled: true,
+            fillColor: theme.colorScheme.surface,
+          ),
+          style: theme.textTheme.bodyMedium,
+          cursorColor: theme.colorScheme.primary,
+        ),
+      ],
+    );
+  }
+}
+
+/// Password text field with toggle visibility
+class AppPasswordField extends StatefulWidget {
+  final String label;
+  final String? hint;
+  final String? errorText;
+  final TextEditingController? controller;
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final Function(String)? onChanged;
+  final Function(String)? onSubmitted;
+  
+  const AppPasswordField({
+    Key? key,
+    required this.label,
+    this.hint,
+    this.errorText,
+    this.controller,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onChanged,
+    this.onSubmitted,
+  }) : super(key: key);
+  
+  @override
+  State<AppPasswordField> createState() => _AppPasswordFieldState();
+}
+
+class _AppPasswordFieldState extends State<AppPasswordField> {
+  bool _obscureText = true;
+  
+  @override
+  Widget build(BuildContext context) {
+    return AppTextField(
+      label: widget.label,
+      hint: widget.hint,
+      errorText: widget.errorText,
+      controller: widget.controller,
+      focusNode: widget.focusNode,
+      keyboardType: TextInputType.visiblePassword,
+      textInputAction: widget.textInputAction,
+      onChanged: widget.onChanged,
+      onSubmitted: widget.onSubmitted,
+      obscureText: _obscureText,
+      suffix: GestureDetector(
+        onTap: () {
+          setState(() {
+            _obscureText = !_obscureText;
+          });
+        },
+        child: Icon(
+          _obscureText ? Icons.visibility_off : Icons.visibility,
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          size: 20,
+        ),
+      ),
+    );
+  }
+}

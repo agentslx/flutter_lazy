@@ -1,0 +1,34 @@
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import '../../data/repository/auth_repository.dart';
+
+part 'welcome_state.dart';
+
+class WelcomeCubit extends Cubit<WelcomeState> {
+  final AuthRepository _authRepository;
+
+  WelcomeCubit(this._authRepository) : super(const WelcomeState());
+
+  void checkAuthStatus() async {
+    emit(state.copyWith(status: WelcomeStatus.loading));
+    
+    try {
+      final isAuthenticated = await _authRepository.checkAuthenticated();
+      
+      if (isAuthenticated) {
+        emit(state.copyWith(status: WelcomeStatus.authenticated));
+      } else {
+        emit(state.copyWith(status: WelcomeStatus.unauthenticated));
+      }
+    } catch (e) {
+      emit(state.copyWith(
+        status: WelcomeStatus.error,
+        error: e.toString(),
+      ));
+    }
+  }
+  
+  void continueAsGuest() {
+    emit(state.copyWith(status: WelcomeStatus.guest));
+  }
+}

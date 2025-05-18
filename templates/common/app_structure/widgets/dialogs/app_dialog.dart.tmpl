@@ -1,0 +1,174 @@
+import 'package:flutter/material.dart';
+
+/// Standardized dialog to use throughout the app
+class AppDialog extends StatelessWidget {
+  final String title;
+  final Widget? content;
+  final List<Widget>? actions;
+  final bool dismissible;
+  
+  const AppDialog({
+    Key? key,
+    required this.title,
+    this.content,
+    this.actions,
+    this.dismissible = true,
+  }) : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 0,
+      backgroundColor: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildTitle(theme),
+            if (content != null) ...[
+              const SizedBox(height: 16),
+              content!,
+            ],
+            if (actions != null) ...[
+              const SizedBox(height: 24),
+              _buildActions(),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildTitle(ThemeData theme) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Text(
+            title,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        if (dismissible)
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () => Navigator.of(
+                getCurrentContext(),
+                rootNavigator: true,
+              ).pop(),
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Icon(
+                  Icons.close,
+                  size: 24,
+                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+  
+  Widget _buildActions() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: actions != null
+          ? actions!.map((action) {
+              return Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: action,
+              );
+            }).toList()
+          : [],
+    );
+  }
+  
+  // Helper to get current context safely
+  BuildContext getCurrentContext() {
+    return WidgetsBinding.instance.focusManager.primaryFocus?.context ??
+        WidgetsBinding.instance.focusManager.rootScope.focusedChild?.context ??
+        WidgetsBinding.instance.platformDispatcher.views.first.context;
+  }
+  
+  // Factory constructors for common dialog types
+  
+  /// Creates a confirmation dialog with Yes/No buttons
+  factory AppDialog.confirmation({
+    required String title,
+    required String message,
+    required VoidCallback onConfirm,
+    VoidCallback? onCancel,
+    String confirmText = 'Yes',
+    String cancelText = 'No',
+    bool isDanger = false,
+  }) {
+    return AppDialog(
+      title: title,
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: onCancel ?? () => Navigator.of(
+            WidgetsBinding.instance.focusManager.primaryFocus?.context ??
+                WidgetsBinding.instance.platformDispatcher.views.first.context,
+            rootNavigator: true,
+          ).pop(false),
+          child: Text(cancelText),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: isDanger ? Colors.red : null,
+            foregroundColor: isDanger ? Colors.white : null,
+          ),
+          onPressed: () {
+            Navigator.of(
+              WidgetsBinding.instance.focusManager.primaryFocus?.context ??
+                  WidgetsBinding.instance.platformDispatcher.views.first.context,
+              rootNavigator: true,
+            ).pop(true);
+            onConfirm();
+          },
+          child: Text(confirmText),
+        ),
+      ],
+    );
+  }
+  
+  /// Creates an alert dialog with a single OK button
+  factory AppDialog.alert({
+    required String title,
+    required String message,
+    VoidCallback? onOk,
+    String okText = 'OK',
+  }) {
+    return AppDialog(
+      title: title,
+      content: Text(message),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(
+              WidgetsBinding.instance.focusManager.primaryFocus?.context ??
+                  WidgetsBinding.instance.platformDispatcher.views.first.context,
+              rootNavigator: true,
+            ).pop();
+            if (onOk != null) {
+              onOk();
+            }
+          },
+          child: Text(okText),
+        ),
+      ],
+    );
+  }
+}

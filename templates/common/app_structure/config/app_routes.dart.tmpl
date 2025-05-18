@@ -1,0 +1,30 @@
+import 'package:go_router/go_router.dart';
+import 'package:flutter/material.dart';
+
+/// Application routes configuration
+class AppRoutes {
+  // Root routes
+  static const String splash = '/';
+  static const String login = '/login';
+  static const String register = '/register';
+  static const String home = '/home';
+  static const String settings = '/settings';
+  static const String profile = '/profile';
+  
+  // Helper methods for navigation
+  static void navigateToHome(BuildContext context) {
+    GoRouter.of(context).go(home);
+  }
+  
+  static void navigateToLogin(BuildContext context) {
+    GoRouter.of(context).go(login);
+  }
+  
+  static void navigateToSettings(BuildContext context) {
+    GoRouter.of(context).go(settings);
+  }
+  
+  static void navigateToProfile(BuildContext context) {
+    GoRouter.of(context).go(profile);
+  }
+}

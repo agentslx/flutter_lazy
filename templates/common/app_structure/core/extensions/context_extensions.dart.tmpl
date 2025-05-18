@@ -1,0 +1,47 @@
+import 'package:flutter/material.dart';
+
+/// Extension methods for BuildContext
+extension ContextExtensions on BuildContext {
+  // Theme extensions
+  ThemeData get theme => Theme.of(this);
+  TextTheme get textTheme => Theme.of(this).textTheme;
+  ColorScheme get colorScheme => Theme.of(this).colorScheme;
+  
+  // Media query extensions
+  MediaQueryData get mediaQuery => MediaQuery.of(this);
+  double get screenWidth => mediaQuery.size.width;
+  double get screenHeight => mediaQuery.size.height;
+  EdgeInsets get padding => mediaQuery.padding;
+  EdgeInsets get viewInsets => mediaQuery.viewInsets;
+  Orientation get orientation => mediaQuery.orientation;
+  bool get isLandscape => orientation == Orientation.landscape;
+  bool get isPortrait => orientation == Orientation.portrait;
+  
+  // Responsive helpers
+  bool get isSmallScreen => screenWidth < 600;
+  bool get isMediumScreen => screenWidth >= 600 && screenWidth < 900;
+  bool get isLargeScreen => screenWidth >= 900;
+  
+  // Snackbar helpers
+  void showSnackBar(String message, {Duration? duration, Color? backgroundColor}) {
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: duration ?? const Duration(seconds: 2),
+        backgroundColor: backgroundColor,
+      ),
+    );
+  }
+  
+  // Dialog helpers
+  Future<T?> showAppDialog<T>({
+    required Widget child,
+    bool barrierDismissible = true,
+  }) {
+    return showDialog<T>(
+      context: this,
+      barrierDismissible: barrierDismissible,
+      builder: (context) => child,
+    );
+  }
+}

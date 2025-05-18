@@ -5,11 +5,13 @@ use std::path::{Path, PathBuf};
 use anyhow::{Context, Result};
 use std::fs;
 use crate::features::{FeatureParams, create_feature, update_main_router, update_main_di};
+use crate::utils::copy_template_file;
 
 /// Create an authentication feature with all required components
 pub fn create_auth_feature(project_dir: &Path) -> Result<()> {
     // Authentication feature has a specialized implementation with multiple cubits
-    let params = FeatureParams::new("auth");
+    // Use minimal params to avoid generating the generic auth_cubit
+    let params = FeatureParams::minimal("auth");
     
     // Check if the feature already exists
     let feature_dir = project_dir.join("lib/features/auth");
@@ -19,7 +21,7 @@ pub fn create_auth_feature(project_dir: &Path) -> Result<()> {
     
     println!("Creating auth feature with specialized components...");
     
-    // Standard feature creation first (this will create the base directory structure)
+    // Create the base directory structure but without generic state management
     create_feature(project_dir, params)?;
     
     // Track created files for summary
@@ -58,9 +60,40 @@ pub fn create_auth_feature(project_dir: &Path) -> Result<()> {
     for cubit in auth_cubits.iter() {
         fs::create_dir_all(feature_dir.join("cubits").join(cubit))
             .context(format!("Failed to create {} directory", cubit))?;
-            
-        // Here we would create the specialized cubit files for each auth cubit
-        // copy_template_file(...) for each cubit
+    }
+    
+    // Copy specialized auth cubits and states
+    let auth_cubit_templates = [
+        // Basic cubits
+        ("features/auth/cubits/login_cubit/login_cubit.dart.tmpl", "cubits/login_cubit/login_cubit.dart"),
+        ("features/auth/cubits/register_cubit/register_cubit.dart.tmpl", "cubits/register_cubit/register_cubit.dart"),
+        ("features/auth/cubits/forgot_password_cubit/forgot_password_cubit.dart.tmpl", "cubits/forgot_password_cubit/forgot_password_cubit.dart"),
+        
+        // Optional cubits
+        ("features/auth/cubits/verify_email_cubit/verify_email_cubit.dart.tmpl", "cubits/verify_email_cubit/verify_email_cubit.dart"),
+        ("features/auth/cubits/create_password_cubit/create_password_cubit.dart.tmpl", "cubits/create_password_cubit/create_password_cubit.dart"),
+        ("features/auth/cubits/welcome_cubit/welcome_cubit.dart.tmpl", "cubits/welcome_cubit/welcome_cubit.dart"),
+        
+        // Basic states
+        ("features/auth/cubits/login_cubit/login_state.dart.tmpl", "cubits/login_cubit/login_state.dart"),
+        ("features/auth/cubits/register_cubit/register_state.dart.tmpl", "cubits/register_cubit/register_state.dart"),
+        ("features/auth/cubits/forgot_password_cubit/forgot_password_state.dart.tmpl", "cubits/forgot_password_cubit/forgot_password_state.dart"),
+        
+        // Optional states
+        ("features/auth/cubits/verify_email_cubit/verify_email_state.dart.tmpl", "cubits/verify_email_cubit/verify_email_state.dart"),
+        ("features/auth/cubits/create_password_cubit/create_password_state.dart.tmpl", "cubits/create_password_cubit/create_password_state.dart"),
+        ("features/auth/cubits/welcome_cubit/welcome_state.dart.tmpl", "cubits/welcome_cubit/welcome_state.dart"),
+    ];
+    
+    for (template, dest_path) in auth_cubit_templates.iter() {
+        copy_template_file(
+            template,
+            &feature_dir.join(dest_path), 
+            &[]
+        ).context(format!("Failed to copy template {}", template))?;
+        
+        let file_type = if dest_path.contains("state.dart") { "State" } else { "Cubit" };
+        created_files.push(format!("- {}: {}", file_type, feature_dir.join(dest_path).display()));
     }
     
     // Add services directory which is specific to auth feature
@@ -85,18 +118,22 @@ pub fn create_auth_feature(project_dir: &Path) -> Result<()> {
     fs::create_dir_all(feature_dir.join("data/repository"))
         .context("Failed to create auth repository directory")?;
     
-    // Create basic auth models
-    let model_path = feature_dir.join("data/models/auth_model.dart");
-    std::fs::write(&model_path, 
-        "class AuthModel {}\n\nclass UserModel {}\n")
-        .context("Failed to create auth model")?;
+    // Copy auth models
+    let model_path = feature_dir.join("data/models/user_model.dart");
+    copy_template_file(
+        "features/auth/data/models/user_model.dart.tmpl",
+        &model_path,
+        &[]
+    ).context("Failed to copy user model template")?;
     created_files.push(format!("- Model: {}", model_path.display()));
     
-    // Create basic auth repository
+    // Copy auth repository
     let repo_path = feature_dir.join("data/repository/auth_repository.dart");
-    std::fs::write(&repo_path, 
-        "abstract class AuthRepository {}\n\nclass AuthRepositoryImpl implements AuthRepository {}\n")
-        .context("Failed to create auth repository")?;
+    copy_template_file(
+        "features/auth/data/repository/auth_repository.dart.tmpl",
+        &repo_path,
+        &[]
+    ).context("Failed to copy auth repository template")?;
     created_files.push(format!("- Repository: {}", repo_path.display()));
     
     // Update main router file to import this feature's router

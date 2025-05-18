@@ -1,0 +1,273 @@
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import '../../../core/failures/exceptions.dart';
+import '../../../config/app_constants.dart';
+
+/// API client for handling network requests
+class ApiClient {
+  late final Dio _dio;
+  final String baseUrl;
+  
+  /// Constructor with optional custom Dio instance
+  ApiClient({
+    required this.baseUrl,
+    Dio? dio,
+    String? authToken,
+  }) {
+    _dio = dio ?? Dio();
+    _configureDio(authToken);
+  }
+  
+  /// Configure Dio with interceptors and options
+  void _configureDio(String? authToken) {
+    // Set default options
+    _dio.options = BaseOptions(
+      baseUrl: baseUrl,
+      connectTimeout: Duration(seconds: AppConstants.apiTimeoutSeconds),
+      receiveTimeout: Duration(seconds: AppConstants.apiTimeoutSeconds),
+      sendTimeout: Duration(seconds: AppConstants.apiTimeoutSeconds),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.acceptHeader: 'application/json',
+        if (authToken != null) HttpHeaders.authorizationHeader: 'Bearer $authToken',
+      },
+    );
+    
+    // Add request interceptor for logging and custom headers
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          // You can modify request options here
+          return handler.next(options);
+        },
+        onResponse: (response, handler) {
+          // You can modify response data here
+          return handler.next(response);
+        },
+        onError: (DioException error, handler) {
+          // You can handle errors here
+          return handler.next(error);
+        },
+      ),
+    );
+    
+    // Add logger interceptor in debug mode
+    if (kDebugMode) {
+      _dio.interceptors.add(
+        PrettyDioLogger(
+          requestHeader: true,
+          requestBody: true,
+          responseBody: true,
+          responseHeader: false,
+          compact: false,
+        ),
+      );
+    }
+  }
+  
+  /// Update the auth token
+  void updateAuthToken(String? token) {
+    if (token != null) {
+      _dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $token';
+    } else {
+      _dio.options.headers.remove(HttpHeaders.authorizationHeader);
+    }
+  }
+  
+  /// GET request
+  Future<T> get<T>(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
+    required T Function(dynamic data) parser,
+  }) async {
+    try {
+      final response = await _dio.get<dynamic>(
+        path,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onReceiveProgress: onReceiveProgress,
+      );
+      return parser(response.data);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+  
+  /// POST request
+  Future<T> post<T>(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+    required T Function(dynamic data) parser,
+  }) async {
+    try {
+      final response = await _dio.post<dynamic>(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      );
+      return parser(response.data);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+  
+  /// PUT request
+  Future<T> put<T>(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+    required T Function(dynamic data) parser,
+  }) async {
+    try {
+      final response = await _dio.put<dynamic>(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      );
+      return parser(response.data);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+  
+  /// DELETE request
+  Future<T> delete<T>(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    required T Function(dynamic data) parser,
+  }) async {
+    try {
+      final response = await _dio.delete<dynamic>(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+      );
+      return parser(response.data);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+  
+  /// PATCH request
+  Future<T> patch<T>(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+    required T Function(dynamic data) parser,
+  }) async {
+    try {
+      final response = await _dio.patch<dynamic>(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      );
+      return parser(response.data);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+  
+  /// Handle Dio errors
+  AppException _handleDioError(DioException e) {
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+        return TimeoutException(
+          'Connection timeout. Please check your internet connection.',
+          duration: e.type == DioExceptionType.connectionTimeout
+              ? _dio.options.connectTimeout
+              : e.type == DioExceptionType.sendTimeout
+                  ? _dio.options.sendTimeout
+                  : _dio.options.receiveTimeout,
+          cause: e,
+        );
+      
+      case DioExceptionType.badResponse:
+        return ApiException(
+          'Server Error: ${e.response?.statusMessage ?? 'Unknown error'}',
+          code: e.response?.statusCode,
+          response: e.response?.data,
+          cause: e,
+        );
+        
+      case DioExceptionType.cancel:
+        return ApiException(
+          'Request was cancelled',
+          cause: e,
+        );
+        
+      case DioExceptionType.connectionError:
+        return NetworkException(
+          'Connection error. Please check your internet connection.',
+          cause: e,
+        );
+        
+      case DioExceptionType.badCertificate:
+        return ApiException(
+          'Bad SSL certificate',
+          cause: e,
+        );
+        
+      default:
+        return ApiException(
+          'An unknown error occurred',
+          cause: e,
+        );
+    }
+  }
+  
+  /// Handle general errors
+  AppException _handleError(dynamic error) {
+    return AppException(
+      'An unexpected error occurred',
+      cause: error,
+    );
+  }
+}

@@ -1,0 +1,34 @@
+part of 'verify_email_cubit.dart';
+
+enum VerifyEmailStatus { initial, loading, success, error, codeSent }
+
+class VerifyEmailState extends Equatable {
+  final VerifyEmailStatus status;
+  final String? error;
+  final String? message;
+  final String? verificationCode;
+
+  const VerifyEmailState({
+    this.status = VerifyEmailStatus.initial,
+    this.error,
+    this.message,
+    this.verificationCode,
+  });
+
+  VerifyEmailState copyWith({
+    VerifyEmailStatus? status,
+    String? error,
+    String? message,
+    String? verificationCode,
+  }) {
+    return VerifyEmailState(
+      status: status ?? this.status,
+      error: error ?? this.error,
+      message: message ?? this.message,
+      verificationCode: verificationCode ?? this.verificationCode,
+    );
+  }
+
+  @override
+  List<Object?> get props => [status, error, message, verificationCode];
+}

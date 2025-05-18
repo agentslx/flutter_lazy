@@ -1,0 +1,180 @@
+import 'package:flutter/material.dart';
+
+/// A reusable information card widget
+class InfoCard extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+  final IconData? icon;
+  final Color? iconColor;
+  final Color? backgroundColor;
+  final VoidCallback? onTap;
+  final Widget? trailing;
+  final EdgeInsets? padding;
+  final BorderRadius? borderRadius;
+  final bool hasShadow;
+  
+  const InfoCard({
+    Key? key,
+    required this.title,
+    this.subtitle,
+    this.icon,
+    this.iconColor,
+    this.backgroundColor,
+    this.onTap,
+    this.trailing,
+    this.padding,
+    this.borderRadius,
+    this.hasShadow = true,
+  }) : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final effectiveBackgroundColor = backgroundColor ?? theme.colorScheme.surface;
+    final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(12);
+    final effectivePadding = padding ?? const EdgeInsets.all(16);
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: effectiveBackgroundColor,
+        borderRadius: effectiveBorderRadius,
+        boxShadow: hasShadow
+            ? [
+                BoxShadow(
+                  color: theme.shadowColor.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: effectiveBorderRadius,
+          child: Padding(
+            padding: effectivePadding,
+            child: Row(
+              children: [
+                _buildIconSection(theme),
+                _buildContentSection(theme),
+                if (trailing != null) ...[
+                  const SizedBox(width: 8),
+                  trailing!,
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildIconSection(ThemeData theme) {
+    if (icon == null) {
+      return const SizedBox.shrink();
+    }
+    
+    final effectiveIconColor = iconColor ?? theme.colorScheme.primary;
+    
+    return Container(
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.only(right: 16),
+      decoration: BoxDecoration(
+        color: effectiveIconColor.withOpacity(0.1),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        icon,
+        size: 24,
+        color: effectiveIconColor,
+      ),
+    );
+  }
+  
+  Widget _buildContentSection(ThemeData theme) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              subtitle!,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// A card that displays status with an optional colored indicator
+class StatusCard extends StatelessWidget {
+  final String title;
+  final String status;
+  final StatusType statusType;
+  final VoidCallback? onTap;
+  
+  const StatusCard({
+    Key? key,
+    required this.title,
+    required this.status,
+    this.statusType = StatusType.info,
+    this.onTap,
+  }) : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    // Determine status color
+    final Color statusColor;
+    switch (statusType) {
+      case StatusType.success:
+        statusColor = Colors.green;
+        break;
+      case StatusType.warning:
+        statusColor = Colors.orange;
+        break;
+      case StatusType.error:
+        statusColor = Colors.red;
+        break;
+      case StatusType.info:
+      default:
+        statusColor = theme.colorScheme.primary;
+        break;
+    }
+    
+    return InfoCard(
+      title: title,
+      subtitle: status,
+      onTap: onTap,
+      trailing: Container(
+        width: 12,
+        height: 12,
+        decoration: BoxDecoration(
+          color: statusColor,
+          shape: BoxShape.circle,
+        ),
+      ),
+    );
+  }
+}
+
+enum StatusType {
+  info,
+  success,
+  warning,
+  error,
+}

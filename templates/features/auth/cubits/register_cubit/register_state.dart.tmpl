@@ -1,0 +1,45 @@
+// dart file: features/auth/cubits/register_cubit/register_state.dart.tmpl
+part of 'register_cubit.dart';
+
+class RegisterState extends Equatable {
+  const RegisterState({
+    this.name = const NameInput.pure(),
+    this.email = const EmailInput.pure(),
+    this.password = const PasswordInput.pure(),
+    this.confirmedPassword = const ConfirmedPasswordInput.pure(),
+    this.status = FormzStatus.pure,
+    this.termsAgreed = false,
+    this.errorMessage,
+  });
+
+  final NameInput name;
+  final EmailInput email;
+  final PasswordInput password;
+  final ConfirmedPasswordInput confirmedPassword;
+  final FormzStatus status;
+  final bool termsAgreed;
+  final String? errorMessage;
+
+  RegisterState copyWith({
+    NameInput? name,
+    EmailInput? email,
+    PasswordInput? password,
+    ConfirmedPasswordInput? confirmedPassword,
+    FormzStatus? status,
+    bool? termsAgreed,
+    String? errorMessage,
+  }) {
+    return RegisterState(
+      name: name ?? this.name,
+      email: email ?? this.email,
+      password: password ?? this.password,
+      confirmedPassword: confirmedPassword ?? this.confirmedPassword,
+      status: status ?? this.status,
+      termsAgreed: termsAgreed ?? this.termsAgreed,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
+
+  @override
+  List<Object?> get props => [name, email, password, confirmedPassword, status, termsAgreed, errorMessage];
+}

@@ -1,0 +1,74 @@
+import 'package:flutter/material.dart';
+
+/// Helper class for dates and time operations throughout the app
+class DateTimeHelper {
+  /// Format a DateTime object to a human-readable string
+  static String formatDate(DateTime? dateTime, {String format = 'MM/dd/yyyy'}) {
+    if (dateTime == null) return '';
+    
+    // Simple formatting patterns
+    if (format == 'MM/dd/yyyy') {
+      return '${_addLeadingZero(dateTime.month)}/${_addLeadingZero(dateTime.day)}/${dateTime.year}';
+    } else if (format == 'dd/MM/yyyy') {
+      return '${_addLeadingZero(dateTime.day)}/${_addLeadingZero(dateTime.month)}/${dateTime.year}';
+    } else if (format == 'yyyy-MM-dd') {
+      return '${dateTime.year}-${_addLeadingZero(dateTime.month)}-${_addLeadingZero(dateTime.day)}';
+    } else if (format == 'MM/dd/yyyy HH:mm') {
+      return '${_addLeadingZero(dateTime.month)}/${_addLeadingZero(dateTime.day)}/${dateTime.year} ${_addLeadingZero(dateTime.hour)}:${_addLeadingZero(dateTime.minute)}';
+    }
+    
+    // Return ISO format as default fallback
+    return dateTime.toIso8601String();
+  }
+  
+  /// Format a DateTime to a relative time string (e.g. "5 minutes ago")
+  static String getRelativeTime(DateTime? dateTime) {
+    if (dateTime == null) return '';
+    
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+    
+    if (difference.inDays > 365) {
+      return '${(difference.inDays / 365).floor()} years ago';
+    } else if (difference.inDays > 30) {
+      return '${(difference.inDays / 30).floor()} months ago';
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hours ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minutes ago';
+    } else {
+      return 'Just now';
+    }
+  }
+  
+  /// Get the current date without time
+  static DateTime getTodayDate() {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
+  
+  /// Check if a date is today
+  static bool isToday(DateTime date) {
+    final now = DateTime.now();
+    return date.year == now.year && date.month == now.month && date.day == now.day;
+  }
+  
+  /// Check if a date is tomorrow
+  static bool isTomorrow(DateTime date) {
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    return date.year == tomorrow.year && date.month == tomorrow.month && date.day == tomorrow.day;
+  }
+  
+  /// Check if a date is yesterday
+  static bool isYesterday(DateTime date) {
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    return date.year == yesterday.year && date.month == yesterday.month && date.day == yesterday.day;
+  }
+  
+  /// Helper method to add leading zero for single-digit numbers
+  static String _addLeadingZero(int number) {
+    return number.toString().padLeft(2, '0');
+  }
+}

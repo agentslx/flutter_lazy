@@ -8,7 +8,7 @@ use convert_case::{Case, Casing};
 use fs_extra::dir::{self, CopyOptions};
 
 use crate::utils::copy_template_file;
-use crate::features::{create_feature, create_auth_feature, create_notification_feature, create_main_page_feature, create_welcome_back_feature};
+use crate::features::{create_feature, create_auth_feature, create_notification_feature, create_main_page_feature};
 
 pub struct ProjectConfig {
     pub name: String,
@@ -46,7 +46,7 @@ impl FlutterProjectGenerator {
             .collect();
         
         // Ask for features
-        let available_features = vec!["auth", "notifications", "main_page", "welcome_back"];
+        let available_features = vec!["auth", "notifications", "main_page"];
         let selected_features = MultiSelect::new()
             .with_prompt("Select features to include")
             .items(&available_features)
@@ -121,14 +121,19 @@ impl FlutterProjectGenerator {
             "core/failures",
             "core/form",
             "core/models",
+            "core/extensions",
+            "core/utils",
             "features", 
             "helpers", 
             "modules/bloc", 
             "modules/local_storage_module", 
             "modules/push_notification", 
             "modules/rest_module",
-            "generated",
-            "widgets"
+            "widgets/buttons",
+            "widgets/cards",
+            "widgets/dialogs",
+            "widgets/inputs"
+            // Note: We're excluding 'generated' directory which will be created by build_runner
         ];
         
         let pb = self.create_progress_bar(directories.len() as u64);
@@ -138,6 +143,52 @@ impl FlutterProjectGenerator {
                 .context(format!("Failed to create directory: {}", dir))?;
             pb.inc(1);
         }
+        
+        // Create config files
+        self.copy_template_file("common/app_structure/config/app_styles.dart.tmpl", &lib_dir.join("config/app_styles.dart"), &[])?;
+        self.copy_template_file("common/app_structure/config/app_theme.dart.tmpl", &lib_dir.join("config/app_theme.dart"), &[])?;
+        self.copy_template_file("common/app_structure/config/app_constants.dart.tmpl", &lib_dir.join("config/app_constants.dart"), &[])?;
+        self.copy_template_file("common/app_structure/config/app_routes.dart.tmpl", &lib_dir.join("config/app_routes.dart"), &[])?;
+        
+        // Create core utility files
+        self.copy_template_file("common/app_structure/core/extensions/string_extensions.dart.tmpl", &lib_dir.join("core/extensions/string_extensions.dart"), &[])?;
+        self.copy_template_file("common/app_structure/core/extensions/context_extensions.dart.tmpl", &lib_dir.join("core/extensions/context_extensions.dart"), &[])?;
+        self.copy_template_file("common/app_structure/core/utils/logger.dart.tmpl", &lib_dir.join("core/utils/logger.dart"), &[])?;
+        self.copy_template_file("common/app_structure/core/utils/validators.dart.tmpl", &lib_dir.join("core/utils/validators.dart"), &[])?;
+        self.copy_template_file("common/app_structure/core/failures/failure.dart.tmpl", &lib_dir.join("core/failures/failure.dart"), &[])?;
+        self.copy_template_file("common/app_structure/core/failures/exceptions.dart.tmpl", &lib_dir.join("core/failures/exceptions.dart"), &[])?;
+        
+        // Create form validators
+        self.copy_template_file("common/app_structure/core/form/email_input.dart.tmpl", &lib_dir.join("core/form/email_input.dart"), &[])?;
+        self.copy_template_file("common/app_structure/core/form/password_input.dart.tmpl", &lib_dir.join("core/form/password_input.dart"), &[])?;
+        self.copy_template_file("common/app_structure/core/form/name_input.dart.tmpl", &lib_dir.join("core/form/name_input.dart"), &[])?;
+        self.copy_template_file("common/app_structure/core/form/confirmed_password_input.dart.tmpl", &lib_dir.join("core/form/confirmed_password_input.dart"), &[])?;
+        
+        // Create common widgets
+        self.copy_template_file("common/app_structure/widgets/buttons/app_button.dart.tmpl", &lib_dir.join("widgets/buttons/app_button.dart"), &[])?;
+        self.copy_template_file("common/app_structure/widgets/inputs/app_text_field.dart.tmpl", &lib_dir.join("widgets/inputs/app_text_field.dart"), &[])?;
+        self.copy_template_file("common/app_structure/widgets/dialogs/app_dialog.dart.tmpl", &lib_dir.join("widgets/dialogs/app_dialog.dart"), &[])?;
+        self.copy_template_file("common/app_structure/widgets/cards/info_card.dart.tmpl", &lib_dir.join("widgets/cards/info_card.dart"), &[])?;
+        
+        // Create modules files
+        self.copy_template_file("common/app_structure/modules/local_storage_module/local_storage.dart.tmpl", &lib_dir.join("modules/local_storage_module/local_storage.dart"), &[])?;
+        self.copy_template_file("common/app_structure/modules/local_storage_module/local_storage_module.dart.tmpl", &lib_dir.join("modules/local_storage_module/local_storage_module.dart"), &[])?;
+        self.copy_template_file("common/app_structure/modules/local_storage_module/shared_pref_impl.dart.tmpl", &lib_dir.join("modules/local_storage_module/shared_pref_impl.dart"), &[])?;
+        
+        self.copy_template_file("common/app_structure/modules/rest_module/api_client.dart.tmpl", &lib_dir.join("modules/rest_module/api_client.dart"), &[])?;
+        self.copy_template_file("common/app_structure/modules/rest_module/restful_module.dart.tmpl", &lib_dir.join("modules/rest_module/restful_module.dart"), &[])?;
+        self.copy_template_file("common/app_structure/modules/rest_module/restful_module_dio_impl.dart.tmpl", &lib_dir.join("modules/rest_module/restful_module_dio_impl.dart"), &[])?;
+        self.copy_template_file("common/app_structure/modules/rest_module/cancel_token.dart.tmpl", &lib_dir.join("modules/rest_module/cancel_token.dart"), &[])?;
+        self.copy_template_file("common/app_structure/modules/rest_module/options.dart.tmpl", &lib_dir.join("modules/rest_module/options.dart"), &[])?;
+        self.copy_template_file("common/app_structure/modules/rest_module/response.dart.tmpl", &lib_dir.join("modules/rest_module/response.dart"), &[])?;
+        
+        self.copy_template_file("common/app_structure/modules/bloc/bloc_observer.dart.tmpl", &lib_dir.join("modules/bloc/bloc_observer.dart"), &[])?;
+        
+        self.copy_template_file("common/app_structure/modules/push_notification/notification_module.dart.tmpl", &lib_dir.join("modules/push_notification/notification_module.dart"), &[])?;
+        
+        // Create helper files
+        self.copy_template_file("common/app_structure/helpers/date_time_helper.dart.tmpl", &lib_dir.join("helpers/date_time_helper.dart"), &[])?;
+        self.copy_template_file("common/app_structure/helpers/ui_helper.dart.tmpl", &lib_dir.join("helpers/ui_helper.dart"), &[])?;
         
         pb.finish_and_clear();
         println!("✅ Directory structure created");
@@ -202,9 +253,6 @@ impl FlutterProjectGenerator {
                 "main_page" => {
                     create_main_page_feature(&self.config.output_dir)?;
                 }
-                "welcome_back" => {
-                    create_welcome_back_feature(&self.config.output_dir)?;
-                }
                 _ => println!("Unknown feature: {}", feature),
             }
             pb.inc(1);
@@ -258,6 +306,10 @@ impl FlutterProjectGenerator {
   logger: ^2.0.2+1
   sentry_flutter: ^7.10.1
   
+  # Firebase
+  firebase_core: ^2.16.0
+  firebase_messaging: ^14.6.8
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -278,6 +330,21 @@ dev_dependencies:
         let deps_pattern = "dependencies:\n  flutter:\n    sdk: flutter";
         if new_pubspec.contains(deps_pattern) {
             new_pubspec = new_pubspec.replace(deps_pattern, &format!("dependencies:\n  flutter:\n    sdk: flutter{}", dependencies));
+            
+            // Remove the default dev_dependencies section to avoid duplication
+            let dev_deps_pattern = "dev_dependencies:\n  flutter_test:\n    sdk: flutter\n\n  # The \"flutter_lints\"";
+            if new_pubspec.contains(dev_deps_pattern) {
+                // Find where the section ends (at the next top-level section)
+                if let Some(dev_deps_start) = new_pubspec.find(dev_deps_pattern) {
+                    if let Some(next_section) = new_pubspec[dev_deps_start..].find("\n# ") {
+                        let section_end = dev_deps_start + next_section;
+                        let before_section = &new_pubspec[0..dev_deps_start];
+                        let after_section = &new_pubspec[section_end..];
+                        new_pubspec = format!("{}{}", before_section, after_section);
+                    }
+                }
+            }
+            
             std::fs::write(&pubspec_path, new_pubspec)?;
         }
         

@@ -2,31 +2,53 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../di.dart';
-import 'cubits/auth_cubit.dart';
+import 'cubits/login_cubit/login_cubit.dart';
+import 'cubits/register_cubit/register_cubit.dart';
+import 'cubits/forgot_password_cubit/forgot_password_cubit.dart';
+import 'cubits/verify_email_cubit/verify_email_cubit.dart';
+import 'cubits/welcome_cubit/welcome_cubit.dart';
+import 'cubits/create_password_cubit/create_password_cubit.dart';
 import 'ui/pages/login_page.dart';
 import 'ui/pages/register_page.dart';
 import 'ui/pages/forgot_password_page.dart';
+import 'ui/pages/verify_email_page.dart';
+import 'ui/pages/welcome_page.dart';
+import 'ui/pages/create_password_page.dart';
 
 final routes = [
   GoRoute(
+    path: '/',
+    builder: (context, state) => BlocProvider(
+      create: (_) => getIt<WelcomeCubit>(),
+      child: const WelcomePage(),
+    ),
+  ),
+  GoRoute(
     path: '/login',
     builder: (context, state) => BlocProvider(
-      create: (_) => getIt<AuthCubit>(),
+      create: (_) => getIt<LoginCubit>(),
       child: const LoginPage(),
     ),
   ),
   GoRoute(
     path: '/register',
     builder: (context, state) => BlocProvider(
-      create: (_) => getIt<AuthCubit>(),
+      create: (_) => getIt<RegisterCubit>(),
       child: const RegisterPage(),
     ),
   ),
   GoRoute(
     path: '/forgot-password',
     builder: (context, state) => BlocProvider(
-      create: (_) => getIt<AuthCubit>(),
+      create: (_) => getIt<ResetPasswordCubit>(),
       child: const ForgotPasswordPage(),
+    ),
+  ),
+  GoRoute(
+    path: '/verify-email',
+    builder: (context, state) => BlocProvider(
+      create: (_) => getIt<VerifyEmailCubit>(),
+      child: const VerifyEmailPage(),
     ),
   ),
 ];

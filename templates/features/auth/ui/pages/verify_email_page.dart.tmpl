@@ -1,0 +1,128 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../cubits/verify_email_cubit/verify_email_cubit.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../widgets/app_text_field.dart';
+import '../../../../widgets/app_button.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/services.dart';
+
+class VerifyEmailPage extends StatefulWidget {
+  const VerifyEmailPage({super.key});
+
+  @override
+  State<VerifyEmailPage> createState() => _VerifyEmailPageState();
+}
+
+class _VerifyEmailPageState extends State<VerifyEmailPage> {
+  final _codeController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _codeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Verify Email').tr(),
+      ),
+      body: BlocConsumer<VerifyEmailCubit, VerifyEmailState>(
+        listener: (context, state) {
+          if (state.status == VerifyEmailStatus.success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('Email verified successfully').tr(),
+                backgroundColor: Colors.green,
+              ),
+            );
+            context.go('/home');
+          } else if (state.status == VerifyEmailStatus.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error ?? 'An error occurred'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          } else if (state.status == VerifyEmailStatus.codeSent) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message ?? 'Verification code sent'),
+                backgroundColor: Colors.blue,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 16),
+                  Text(
+                    'Please check your email and enter the verification code below.',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ).tr(),
+                  const SizedBox(height: 24),
+                  AppTextField(
+                    controller: _codeController,
+                    label: 'Verification Code'.tr(),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(6),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the verification code'.tr();
+                      }
+                      if (value.length < 6) {
+                        return 'Code must be 6 digits'.tr();
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  AppButton(
+                    onPressed: state.status == VerifyEmailStatus.loading
+                        ? null
+                        : () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              context.read<VerifyEmailCubit>().verifyEmail(
+                                    _codeController.text.trim(),
+                                  );
+                            }
+                          },
+                    text: 'Verify'.tr(),
+                    isLoading: state.status == VerifyEmailStatus.loading,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Didn\'t receive a code?'.tr()),
+                      TextButton(
+                        onPressed: state.status == VerifyEmailStatus.loading
+                            ? null
+                            : () {
+                                context.read<VerifyEmailCubit>().resendVerificationCode();
+                              },
+                        child: const Text('Resend').tr(),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

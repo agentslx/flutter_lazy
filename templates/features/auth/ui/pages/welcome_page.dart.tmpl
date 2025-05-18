@@ -1,0 +1,107 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../cubits/welcome_cubit/welcome_cubit.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../widgets/app_button.dart';
+import 'package:easy_localization/easy_localization.dart';
+
+class WelcomePage extends StatefulWidget {
+  const WelcomePage({super.key});
+
+  @override
+  State<WelcomePage> createState() => _WelcomePageState();
+}
+
+class _WelcomePageState extends State<WelcomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Check authentication status when page loads
+    context.read<WelcomeCubit>().checkAuthStatus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: BlocConsumer<WelcomeCubit, WelcomeState>(
+        listener: (context, state) {
+          if (state.status == WelcomeStatus.authenticated) {
+            context.go('/home');
+          } else if (state.status == WelcomeStatus.guest) {
+            context.go('/home');
+          } else if (state.status == WelcomeStatus.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error ?? 'An error occurred'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Spacer(flex: 1),
+                  Center(
+                    child: Image.asset(
+                      'assets/images/app_logo.png',
+                      width: 120,
+                      height: 120,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.image,
+                        size: 120,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  Text(
+                    'Welcome to AppName',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                    textAlign: TextAlign.center,
+                  ).tr(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Your app description goes here.',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    textAlign: TextAlign.center,
+                  ).tr(),
+                  const Spacer(flex: 2),
+                  if (state.status == WelcomeStatus.loading)
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  else if (state.status == WelcomeStatus.unauthenticated || 
+                           state.status == WelcomeStatus.initial) ...[
+                    AppButton(
+                      onPressed: () => context.push('/login'),
+                      text: 'Login'.tr(),
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
+                    const SizedBox(height: 16),
+                    AppButton(
+                      onPressed: () => context.push('/register'),
+                      text: 'Register'.tr(),
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                    ),
+                    const SizedBox(height: 24),
+                    TextButton(
+                      onPressed: () => context.read<WelcomeCubit>().continueAsGuest(),
+                      child: const Text('Continue as guest').tr(),
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

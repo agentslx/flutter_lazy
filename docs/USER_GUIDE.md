@@ -38,6 +38,8 @@ flutter_lazy feature -n feature_name
 - `--no-repository`: Skip repository files
 - `--no-models`: Skip model files
 - `--no-pages`: Skip UI pages
+- `--no-services`: Skip services
+- `--no-utils`: Skip utils directory
 - `--no-routing`: Skip routing configuration
 - `--no-di`: Skip dependency injection setup
 
@@ -89,6 +91,12 @@ flutter_lazy feature -n analytics -m
 
 ```bash
 flutter_lazy feature -n user_profile --no-repository --no-models
+```
+
+### Create a UI-Only Feature with Services
+
+```bash
+flutter_lazy feature -n settings --no-state --no-repository --no-models --no-utils
 ```
 
 ### Create a Complete Feature

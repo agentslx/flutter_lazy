@@ -23,6 +23,8 @@ pub struct FeatureParams {
     pub has_repository: bool,
     pub has_models: bool,
     pub has_pages: bool,
+    pub has_services: bool,
+    pub has_utils: bool,
     pub needs_routing: bool,
     pub needs_di: bool,
 }
@@ -35,6 +37,8 @@ impl FeatureParams {
             has_repository: true,
             has_models: true,
             has_pages: true,
+            has_services: true,
+            has_utils: true,
             needs_routing: true,
             needs_di: true,
         }
@@ -47,6 +51,8 @@ impl FeatureParams {
             has_repository: false,
             has_models: false,
             has_pages: true,
+            has_services: false,
+            has_utils: false,
             needs_routing: true,
             needs_di: false,
         }
@@ -59,6 +65,8 @@ impl FeatureParams {
             has_repository: false,
             has_models: false,
             has_pages: true,
+            has_services: false,
+            has_utils: false,
             needs_routing: true,
             needs_di: true,
         }
@@ -116,6 +124,18 @@ pub fn create_feature(project_dir: &Path, params: FeatureParams) -> Result<()> {
             .context("Failed to create pages directory")?;
         fs::create_dir_all(feature_dir.join("ui/_widgets"))
             .context("Failed to create _widgets directory")?;
+    }
+    
+    // Create services directory if needed
+    if params.has_services {
+        fs::create_dir_all(feature_dir.join("services"))
+            .context("Failed to create services directory")?;
+    }
+    
+    // Create utils directory if needed
+    if params.has_utils {
+        fs::create_dir_all(feature_dir.join("utils"))
+            .context("Failed to create utils directory")?;
     }
     
     // Create template files with replacements
@@ -236,6 +256,28 @@ fn generate_feature_files(
         update_main_router(project_dir_path, snake_name, pascal_name)?;
     }
     
+    // Generate services if needed
+    if params.has_services {
+        let service_file = feature_dir.join("services").join(format!("{}_service.dart", snake_name));
+        copy_template_file(
+            "features/common/services/feature_service.dart.tmpl",
+            &service_file,
+            &replacements
+        )?;
+        created_files.push(format!("- Service: {}", service_file.display()));
+    }
+    
+    // Generate utils if needed
+    if params.has_utils {
+        let utils_file = feature_dir.join("utils").join(format!("{}_helpers.dart", snake_name));
+        copy_template_file(
+            "features/common/utils/feature_helpers.dart.tmpl",
+            &utils_file,
+            &replacements
+        )?;
+        created_files.push(format!("- Utils: {}", utils_file.display()));
+    }
+
     // Generate DI if needed
     if params.needs_di {
         let di_file = feature_dir.join("di.dart");

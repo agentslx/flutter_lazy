@@ -1,0 +1,73 @@
+import 'dart:async';
+
+import '../../../di.dart';
+import '../data/models/{{ FEATURE_NAME_SNAKE }}_model.dart';
+import '../data/repository/{{ FEATURE_NAME_SNAKE }}_repository.dart';
+
+/// Provides APIs for {{ FEATURE_NAME_SNAKE }} functionality
+abstract class {{ FEATURE_NAME_PASCAL }}Service {
+  Future<{{ FEATURE_NAME_PASCAL }}Model?> get{{ FEATURE_NAME_PASCAL }}();
+  
+  Future<void> update{{ FEATURE_NAME_PASCAL }}({{ FEATURE_NAME_PASCAL }}Model {{ FEATURE_NAME_CAMEL }});
+  
+  Stream<{{ FEATURE_NAME_PASCAL }}Model?> get{{ FEATURE_NAME_PASCAL }}Stream();
+  
+  void dispose();
+}
+
+class {{ FEATURE_NAME_PASCAL }}ServiceImpl implements {{ FEATURE_NAME_PASCAL }}Service {
+  {{ FEATURE_NAME_PASCAL }}ServiceImpl({{{ FEATURE_NAME_PASCAL }}Repository? repository}) : 
+      _repository = repository ?? getIt<{{ FEATURE_NAME_PASCAL }}Repository>();
+
+  final {{ FEATURE_NAME_PASCAL }}Repository _repository;
+  final _controller = StreamController<{{ FEATURE_NAME_PASCAL }}Model?>.broadcast();
+  {{ FEATURE_NAME_PASCAL }}Model? _cachedData;
+  
+  @override
+  Future<{{ FEATURE_NAME_PASCAL }}Model?> get{{ FEATURE_NAME_PASCAL }}() async {
+    if (_cachedData != null) {
+      return _cachedData;
+    }
+    
+    final result = await _repository.getData();
+    
+    return result.fold(
+      (failure) => null,
+      (data) {
+        _cachedData = data;
+        _controller.add(data);
+        return data;
+      },
+    );
+  }
+  
+  @override
+  Future<void> update{{ FEATURE_NAME_PASCAL }}({{ FEATURE_NAME_PASCAL }}Model {{ FEATURE_NAME_CAMEL }}) async {
+    final result = await _repository.updateData({{ FEATURE_NAME_CAMEL }});
+    
+    result.fold(
+      (failure) {
+        // Handle failure if needed
+      },
+      (data) {
+        _cachedData = data;
+        _controller.add(data);
+      },
+    );
+  }
+  
+  @override
+  Stream<{{ FEATURE_NAME_PASCAL }}Model?> get{{ FEATURE_NAME_PASCAL }}Stream() {
+    // Initialize data if not already done
+    if (_cachedData == null) {
+      get{{ FEATURE_NAME_PASCAL }}();
+    }
+    
+    return _controller.stream;
+  }
+  
+  @override
+  void dispose() {
+    _controller.close();
+  }
+}

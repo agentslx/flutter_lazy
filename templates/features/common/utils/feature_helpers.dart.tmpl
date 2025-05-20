@@ -1,0 +1,29 @@
+/// Utility functions for the {{ FEATURE_NAME_PASCAL }} feature
+
+/// Formats {{ FEATURE_NAME_SNAKE }} data for display
+String format{{ FEATURE_NAME_PASCAL }}Data(dynamic data) {
+  if (data == null) {
+    return 'Not available';
+  }
+  return data.toString();
+}
+
+/// Validates {{ FEATURE_NAME_SNAKE }} input
+bool validate{{ FEATURE_NAME_PASCAL }}Input(String input) {
+  return input.isNotEmpty && input.length >= 3;
+}
+
+/// Transforms {{ FEATURE_NAME_SNAKE }} data for API requests
+Map<String, dynamic> transform{{ FEATURE_NAME_PASCAL }}ForAPI(Map<String, dynamic> data) {
+  // Add any necessary transformations here
+  return {
+    ...data,
+    'timestamp': DateTime.now().toIso8601String(),
+  };
+}
+
+/// Parses {{ FEATURE_NAME_SNAKE }} response data
+dynamic parse{{ FEATURE_NAME_PASCAL }}Response(Map<String, dynamic> responseData) {
+  // Add any necessary parsing logic here
+  return responseData['data'];
+}

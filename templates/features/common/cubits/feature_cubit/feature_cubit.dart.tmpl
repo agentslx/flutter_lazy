@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
@@ -8,6 +7,7 @@ import 'package:formz/formz.dart';
 import '../../../../di.dart';
 import '../../data/models/{{ FEATURE_NAME_SNAKE }}_model.dart';
 import '../../data/repository/{{ FEATURE_NAME_SNAKE }}_repository.dart';
+import '../../services/{{ FEATURE_NAME_SNAKE }}_service.dart';
 
 part '{{ FEATURE_NAME_SNAKE }}_state.dart';
 
@@ -15,6 +15,7 @@ class {{ FEATURE_NAME_PASCAL }}Cubit extends Cubit<{{ FEATURE_NAME_PASCAL }}Stat
   {{ FEATURE_NAME_PASCAL }}Cubit() : super(const {{ FEATURE_NAME_PASCAL }}State());
 
   final {{ FEATURE_NAME_PASCAL }}Repository _repository = getIt<{{ FEATURE_NAME_PASCAL }}Repository>();
+  final {{ FEATURE_NAME_PASCAL }}Service _service = getIt<{{ FEATURE_NAME_PASCAL }}Service>();
 
   /// Initialize the cubit and load data
   Future<void> initialize() async {

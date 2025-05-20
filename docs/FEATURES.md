@@ -25,10 +25,14 @@ feature_name/
 │   │   └── feature_response_model.dart
 │   └── repository/            # Repository pattern implementation
 │       └── feature_repository.dart
+├── services/                  # Services layer
+│   └── feature_service.dart   # Feature-specific services
 ├── ui/                        # Presentation layer
 │   ├── pages/                 # Screen/pages
 │   │   ├── feature_page.dart
 │   │   └── feature_detail_page.dart
+├── utils/                     # Utility functions
+│   └── feature_helpers.dart   # Feature-specific helper functions
 │   └── widgets/               # Reusable UI components
 │       └── feature_item_widget.dart
 ├── di.dart                    # Dependency injection registration
@@ -57,6 +61,14 @@ The cubit pattern follows a modern implementation with these characteristics:
    - Business logic processing
    - Error handling
 
+### Services Layer
+
+- `feature_service.dart`:
+  - Abstraction for feature-specific business logic
+  - Mediates between UI and data layer
+  - Handles caching and state management
+  - Provides stream-based data access
+
 ### Data Layer
 
 #### Repository Pattern
@@ -81,6 +93,9 @@ The cubit pattern follows a modern implementation with these characteristics:
 - `feature_response_model.dart`: API response structure
 - `failure.dart`: Feature-specific failure types
 - `enums.dart`: Feature-specific enumerations
+
+### Utils
+- `feature_helpers.dart`: Feature-specific helper functions and utilities
 
 ### UI Layer
 
@@ -141,5 +156,7 @@ The feature generator supports customizing which components are included:
 - `--no-repository`: Skips repository files
 - `--no-models`: Skips model files
 - `--no-pages`: Skips UI pages
+- `--no-services`: Skips services layer
+- `--no-utils`: Skips utils directory
 - `--no-routing`: Skips routing configuration
 - `--no-di`: Skips dependency injection setup

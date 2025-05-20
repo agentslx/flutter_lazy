@@ -6,6 +6,7 @@ import 'cubits/{{ FEATURE_NAME_SNAKE }}_cubit/{{ FEATURE_NAME_SNAKE }}_cubit.dar
 import 'data/datasources/{{ FEATURE_NAME_SNAKE }}_local_datasource.dart';
 import 'data/datasources/{{ FEATURE_NAME_SNAKE }}_remote_datasource.dart';
 import 'data/repository/{{ FEATURE_NAME_SNAKE }}_repository.dart';
+import 'services/{{ FEATURE_NAME_SNAKE }}_service.dart';
 
 Future<void> init{{ FEATURE_NAME_PASCAL }}Di(GetIt getIt) async {
   // Register data sources
@@ -24,6 +25,11 @@ Future<void> init{{ FEATURE_NAME_PASCAL }}Di(GetIt getIt) async {
   // Register repositories
   getIt.registerFactory<{{ FEATURE_NAME_PASCAL }}Repository>(
     () => {{ FEATURE_NAME_PASCAL }}RepositoryImpl(),
+  );
+  
+  // Register services
+  getIt.registerLazySingleton<{{ FEATURE_NAME_PASCAL }}Service>(
+    () => {{ FEATURE_NAME_PASCAL }}ServiceImpl(),
   );
   
   // Register cubits

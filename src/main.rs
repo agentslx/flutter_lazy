@@ -73,6 +73,14 @@ enum Commands {
         #[arg(long, default_value = "false")]
         no_pages: bool,
         
+        /// Skip services
+        #[arg(long, default_value = "false")]
+        no_services: bool,
+        
+        /// Skip utils directory
+        #[arg(long, default_value = "false")]
+        no_utils: bool,
+        
         /// Skip routing configuration
         #[arg(long, default_value = "false")]
         no_routing: bool,
@@ -160,6 +168,8 @@ fn main() -> Result<()> {
             no_repository,
             no_models,
             no_pages,
+            no_services,
+            no_utils,
             no_routing,
             no_di 
         } => {
@@ -244,6 +254,8 @@ fn main() -> Result<()> {
                     "Repository Layer",
                     "Data Models",
                     "UI Pages",
+                    "Services",
+                    "Utils Directory",
                     "Routing Configuration",
                     "Dependency Injection"
                 ];
@@ -251,7 +263,7 @@ fn main() -> Result<()> {
                 let selections = dialoguer::MultiSelect::new()
                     .with_prompt("Select components to include")
                     .items(&components)
-                    .defaults(&[true, true, true, true, true, true])
+                    .defaults(&[true, true, true, true, true, true, true, true])
                     .interact()?;
                 
                 // Update params based on selections
@@ -259,8 +271,10 @@ fn main() -> Result<()> {
                 params.has_repository = selections.contains(&1) && !*no_repository;
                 params.has_models = selections.contains(&2) && !*no_models;
                 params.has_pages = selections.contains(&3) && !*no_pages;
-                params.needs_routing = selections.contains(&4) && !*no_routing;
-                params.needs_di = selections.contains(&5) && !*no_di;
+                params.has_services = selections.contains(&4) && !*no_services;
+                params.has_utils = selections.contains(&5) && !*no_utils;
+                params.needs_routing = selections.contains(&6) && !*no_routing;
+                params.needs_di = selections.contains(&7) && !*no_di;
             } else {
                 // Apply individual flags to override defaults even in minimal mode
                 if *no_state {
@@ -277,6 +291,14 @@ fn main() -> Result<()> {
                 
                 if *no_pages {
                     params.has_pages = false;
+                }
+                
+                if *no_services {
+                    params.has_services = false;
+                }
+                
+                if *no_utils {
+                    params.has_utils = false;
                 }
                 
                 if *no_routing {

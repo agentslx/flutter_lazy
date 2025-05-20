@@ -1,0 +1,115 @@
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:injectable/injectable.dart';
+
+import '../../../data/models/notification_model.dart';
+import '../../../data/repository/notification_repository.dart';
+import '../../../services/notification_service.dart';
+
+part 'notification_state.dart';
+
+@injectable
+class NotificationCubit extends Cubit<NotificationState> {
+  final NotificationRepository _notificationRepository;
+  final NotificationService _notificationService;
+
+  NotificationCubit(
+    this._notificationRepository,
+    this._notificationService,
+  ) : super(NotificationInitial()) {
+    // Listen for foreground messages
+    _notificationService.foregroundNotificationStream.listen(_handleNotification);
+    
+    // Check for initial message (app opened from notification)
+    _checkInitialMessage();
+  }
+
+  Future<void> initialize() async {
+    emit(NotificationLoading());
+    try {
+      await _notificationService.initialize();
+      emit(NotificationInitialized());
+    } catch (e) {
+      emit(NotificationError('Failed to initialize notifications: $e'));
+    }
+  }
+
+  Future<void> requestPermission() async {
+    try {
+      await _notificationService.requestPermission();
+      await _notificationService.registerToken();
+    } catch (e) {
+      emit(NotificationError('Failed to request notification permission: $e'));
+    }
+  }
+
+  Future<void> fetchNotifications() async {
+    if (state is NotificationLoading) return;
+    
+    emit(NotificationLoading());
+    
+    final result = await _notificationRepository.getNotifications();
+    
+    result.fold(
+      (failure) => emit(NotificationError(failure.message)),
+      (notifications) => emit(NotificationLoaded(notifications)),
+    );
+  }
+
+  Future<void> markAsRead(String notificationId) async {
+    if (state is! NotificationLoaded) return;
+    
+    final currentNotifications = (state as NotificationLoaded).notifications;
+    
+    final result = await _notificationRepository.markAsRead(notificationId);
+    
+    result.fold(
+      (failure) => emit(NotificationError(failure.message)),
+      (success) {
+        final updatedNotifications = currentNotifications.map((notification) {
+          if (notification.id == notificationId) {
+            return notification.markAsRead();
+          }
+          return notification;
+        }).toList();
+        
+        emit(NotificationLoaded(updatedNotifications));
+      },
+    );
+  }
+
+  Future<void> markAllAsRead() async {
+    if (state is! NotificationLoaded) return;
+    
+    final result = await _notificationRepository.markAllAsRead();
+    
+    result.fold(
+      (failure) => emit(NotificationError(failure.message)),
+      (success) {
+        final currentNotifications = (state as NotificationLoaded).notifications;
+        final updatedNotifications = currentNotifications.map((notification) => 
+          notification.markAsRead()
+        ).toList();
+        
+        emit(NotificationLoaded(updatedNotifications));
+      },
+    );
+  }
+  
+  void _handleNotification(RemoteMessage message) {
+    // Handle the notification data
+    // This could update the UI or trigger other actions
+    
+    // Force refresh notifications list
+    fetchNotifications();
+  }
+  
+  Future<void> _checkInitialMessage() async {
+    final initialMessage = await _notificationService.getInitialMessage();
+    if (initialMessage != null) {
+      // Handle notification that opened the app
+      // You might want to navigate to a specific screen based on the notification data
+    }
+  }
+}

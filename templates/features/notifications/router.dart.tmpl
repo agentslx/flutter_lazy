@@ -1,0 +1,43 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import 'cubits/notification_cubit/notification_cubit.dart';
+import 'ui/pages/notification_page.dart';
+import 'ui/pages/notification_details_page.dart';
+
+class NotificationsRouter {
+  static const String notificationsPath = '/notifications';
+  static const String notificationsName = 'notifications';
+  
+  static RouteBase get route => GoRoute(
+    path: notificationsPath,
+    name: notificationsName,
+    builder: (BuildContext context, GoRouterState state) {
+      return BlocProvider(
+        create: (context) => context.read<NotificationCubit>(),
+        child: const NotificationPage(),
+      );
+    },
+  );
+  
+  // Method to navigate to notifications page
+  static void navigateToNotifications(BuildContext context) {
+    GoRouter.of(context).goNamed(notificationsName);
+  }
+  
+  // Method to handle deep links or notification taps with specific data
+  static void handleNotificationTap(BuildContext context, Map<String, dynamic> data) {
+    // You could implement custom routing logic here based on notification data
+    // For example, if notification contains a product ID:
+    // if (data.containsKey('productId')) {
+    //   final productId = data['productId'];
+    //   context.go('/products/$productId');
+    //   return;
+    // }
+    
+    // Default to notifications list
+    navigateToNotifications(context);
+  }
+}

@@ -1,0 +1,187 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../cubits/notification_cubit/notification_cubit.dart';
+import '../../../data/models/notification_model.dart';
+import 'notification_details_page.dart';
+import 'package:intl/intl.dart';
+
+class NotificationPage extends StatefulWidget {
+  const NotificationPage({super.key});
+
+  @override
+  State<NotificationPage> createState() => _NotificationPageState();
+}
+
+class _NotificationPageState extends State<NotificationPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationCubit>().fetchNotifications();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Notifications'),
+        actions: [
+          BlocBuilder<NotificationCubit, NotificationState>(
+            builder: (context, state) {
+              if (state is NotificationLoaded && state.unreadCount > 0) {
+                return IconButton(
+                  icon: const Icon(Icons.done_all),
+                  tooltip: 'Mark all as read',
+                  onPressed: () {
+                    context.read<NotificationCubit>().markAllAsRead();
+                  },
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ],
+      ),
+      body: BlocBuilder<NotificationCubit, NotificationState>(
+        builder: (context, state) {
+          if (state is NotificationLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is NotificationLoaded) {
+            if (state.notifications.isEmpty) {
+              return const Center(
+                child: Text('No notifications'),
+              );
+            }
+            
+            return RefreshIndicator(
+              onRefresh: () async {
+                await context.read<NotificationCubit>().fetchNotifications();
+              },
+              child: ListView.builder(
+                itemCount: state.notifications.length,
+                itemBuilder: (context, index) {
+                  final notification = state.notifications[index];
+                  return _buildNotificationItem(context, notification);
+                },
+              ),
+            );
+          } else if (state is NotificationError) {
+            return Center(
+              child: Text(
+                'Error: ${state.message}',
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          }
+          
+          return const Center(
+            child: Text('No notifications yet'),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildNotificationItem(BuildContext context, NotificationModel notification) {
+    final theme = Theme.of(context);
+    
+    return InkWell(
+      onTap: () {
+        if (!notification.isRead) {
+          context.read<NotificationCubit>().markAsRead(notification.id);
+        }
+        
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NotificationDetailsPage(notification: notification),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: notification.isRead 
+            ? null 
+            : theme.colorScheme.primary.withOpacity(0.05),
+          border: Border(
+            bottom: BorderSide(
+              color: theme.dividerColor,
+              width: 0.5,
+            ),
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!notification.isRead)
+              Container(
+                width: 10,
+                height: 10,
+                margin: const EdgeInsets.only(top: 6, right: 12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  shape: BoxShape.circle,
+                ),
+              )
+            else
+              const SizedBox(width: 22),
+              
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          notification.title,
+                          style: TextStyle(
+                            fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Text(
+                        _formatDate(notification.createdAt),
+                        style: TextStyle(
+                          color: theme.textTheme.bodySmall?.color,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    notification.body,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: theme.textTheme.bodyMedium?.color,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+    
+    if (difference.inDays == 0) {
+      return DateFormat.Hm().format(date);
+    } else if (difference.inDays < 7) {
+      return DateFormat.E().format(date);
+    } else {
+      return DateFormat.yMMMd().format(date);
+    }
+  }
+}

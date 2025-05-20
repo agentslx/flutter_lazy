@@ -1,0 +1,94 @@
+import 'package:injectable/injectable.dart';
+
+import '../../../../../modules/rest_module/rest_module.dart';
+import '../models/notification_model.dart';
+
+abstract class NotificationRemoteDataSource {
+  Future<bool> sendPushToken(String token);
+  Future<bool> clearPushToken(String token);
+  Future<List<NotificationModel>> getNotifications();
+  Future<bool> markAsRead(String notificationId);
+  Future<bool> markAllAsRead();
+}
+
+@LazySingleton(as: NotificationRemoteDataSource)
+class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
+  final NetworkModule _networkModule;
+  static const String _baseUrl = '/notifications';
+
+  NotificationRemoteDataSourceImpl(this._networkModule);
+
+  @override
+  Future<bool> sendPushToken(String token) async {
+    final result = await _networkModule.post<Map<String, dynamic>>(
+      '$_baseUrl/token',
+      data: {'token': token, 'platform': _getPlatformName()},
+      parser: (data) => data as Map<String, dynamic>,
+    );
+
+    return result.fold(
+      (failure) => throw Exception(failure.message),
+      (success) => true,
+    );
+  }
+  
+  @override
+  Future<bool> clearPushToken(String token) async {
+    final result = await _networkModule.delete<Map<String, dynamic>>(
+      '$_baseUrl/token',
+      data: {'token': token, 'platform': _getPlatformName()},
+      parser: (data) => data as Map<String, dynamic>,
+    );
+
+    return result.fold(
+      (failure) => throw Exception(failure.message),
+      (success) => true,
+    );
+  }
+
+  String _getPlatformName() {
+    // This would be replaced with actual platform detection in real implementation
+    return 'android'; // or 'ios'
+  }
+
+  @override
+  Future<List<NotificationModel>> getNotifications() async {
+    final result = await _networkModule.get<List<dynamic>>(
+      _baseUrl,
+      parser: (data) => data as List<dynamic>,
+    );
+
+    return result.fold(
+      (failure) => throw Exception(failure.message),
+      (notifications) => notifications
+          .map((json) => NotificationModel.fromJson(json as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  @override
+  Future<bool> markAsRead(String notificationId) async {
+    final result = await _networkModule.put<Map<String, dynamic>>(
+      '$_baseUrl/$notificationId/read',
+      parser: (data) => data as Map<String, dynamic>,
+    );
+
+    return result.fold(
+      (failure) => throw Exception(failure.message),
+      (success) => true,
+    );
+  }
+  
+  @override
+  Future<bool> markAllAsRead() async {
+    final result = await _networkModule.put<Map<String, dynamic>>(
+      '$_baseUrl/read-all',
+      parser: (data) => data as Map<String, dynamic>,
+    );
+
+    return result.fold(
+      (failure) => throw Exception(failure.message),
+      (success) => true,
+    );
+  }
+}

@@ -6,13 +6,18 @@ import 'package:formz/formz.dart';
 import '../../../../../core/form/email_input.dart';
 import '../../../../../core/form/password_input.dart';
 import '../../data/repository/auth_repository.dart';
+import '../../../notifications/services/notification_auth_service.dart';
 
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   final AuthRepository _authRepository;
+  final NotificationAuthService _notificationAuthService;
 
-  LoginCubit(this._authRepository) : super(const LoginState());
+  LoginCubit(
+    this._authRepository, 
+    this._notificationAuthService
+  ) : super(const LoginState());
 
   void emailChanged(String value) {
     final email = EmailInput.dirty(value);
@@ -44,7 +49,11 @@ class LoginCubit extends Cubit<LoginState> {
           status: FormzStatus.submissionFailure,
           errorMessage: failure.message,
         )),
-        (_) => emit(state.copyWith(status: FormzStatus.submissionSuccess)),
+        (_) async {
+          // Request notification permissions after successful login
+          await _notificationAuthService.onUserLoggedIn();
+          emit(state.copyWith(status: FormzStatus.submissionSuccess));
+        }),
       );
     } catch (e) {
       emit(state.copyWith(
@@ -59,6 +68,10 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       // Add implementation when social login is available
       await Future.delayed(const Duration(seconds: 1));
+      
+      // Request notification permissions after successful login
+      await _notificationAuthService.onUserLoggedIn();
+      
       emit(state.copyWith(status: FormzStatus.submissionSuccess));
     } catch (e) {
       emit(state.copyWith(
@@ -73,6 +86,10 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       // Add implementation when social login is available
       await Future.delayed(const Duration(seconds: 1));
+      
+      // Request notification permissions after successful login
+      await _notificationAuthService.onUserLoggedIn();
+      
       emit(state.copyWith(status: FormzStatus.submissionSuccess));
     } catch (e) {
       emit(state.copyWith(

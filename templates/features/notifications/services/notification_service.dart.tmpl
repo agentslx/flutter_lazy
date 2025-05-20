@@ -1,0 +1,176 @@
+import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:injectable/injectable.dart';
+import '../data/repository/notification_repository.dart';
+
+abstract class NotificationService {
+  Future<void> initialize();
+  Future<void> requestPermission();
+  Future<void> registerToken();
+  Stream<RemoteMessage> get foregroundNotificationStream;
+  Stream<String?> get tokenRefreshStream;
+  Future<RemoteMessage?> getInitialMessage();
+  void dispose();
+}
+
+@LazySingleton(as: NotificationService)
+class NotificationServiceImpl implements NotificationService {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  final NotificationRepository _notificationRepository;
+  
+  final StreamController<RemoteMessage> _foregroundNotificationController = 
+      StreamController<RemoteMessage>.broadcast();
+  final StreamController<String?> _tokenRefreshController = 
+      StreamController<String?>.broadcast();
+  
+  NotificationServiceImpl(this._notificationRepository);
+  
+  @override
+  Future<void> initialize() async {
+    // Initialize local notifications
+    const AndroidInitializationSettings androidSettings = 
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+        
+    const DarwinInitializationSettings iosSettings = 
+        DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
+    
+    const InitializationSettings initSettings = InitializationSettings(
+      android: androidSettings, 
+      iOS: iosSettings,
+    );
+    
+    await _localNotifications.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: _onTapLocalNotification,
+    );
+    
+    // Configure Firebase Messaging handlers
+    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    
+    // Listen for token refresh
+    _firebaseMessaging.onTokenRefresh.listen((token) {
+      _tokenRefreshController.add(token);
+      // When token is refreshed, send to backend
+      _notificationRepository.sendPushToken(token);
+    });
+  }
+  
+  void _onTapLocalNotification(NotificationResponse response) {
+    // Handle notification tap
+    // This would typically navigate to a specific screen based on the notification data
+    if (kDebugMode) {
+      print('Notification tapped: ${response.payload}');
+    }
+    
+    // Here you would add code to navigate to the appropriate screen
+    // based on the notification payload
+  }
+  
+  void _handleForegroundMessage(RemoteMessage message) {
+    if (kDebugMode) {
+      print('Handling a foreground message: ${message.messageId}');
+    }
+    
+    _foregroundNotificationController.add(message);
+    
+    // Display a local notification when the app is in foreground
+    _showLocalNotification(message);
+  }
+  
+  Future<void> _showLocalNotification(RemoteMessage message) async {
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'high_importance_channel',
+      'High Importance Notifications',
+      channelDescription: 'This channel is used for important notifications',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+    
+    final DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+    
+    final NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+    
+    await _localNotifications.show(
+      message.hashCode,
+      message.notification?.title,
+      message.notification?.body,
+      notificationDetails,
+      payload: message.data.toString(),
+    );
+  }
+  
+  @override
+  Future<void> requestPermission() async {
+    final NotificationSettings settings = await _firebaseMessaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+      provisional: false,
+    );
+    
+    if (kDebugMode) {
+      print('User granted permission: ${settings.authorizationStatus}');
+    }
+    
+    // For iOS, also register with Apple
+    await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+  }
+  
+  @override
+  Future<void> registerToken() async {
+    final token = await _firebaseMessaging.getToken();
+    if (token != null) {
+      if (kDebugMode) {
+        print('FCM Token: $token');
+      }
+      await _notificationRepository.sendPushToken(token);
+    }
+  }
+  
+  @override
+  Stream<RemoteMessage> get foregroundNotificationStream => 
+      _foregroundNotificationController.stream;
+      
+  @override
+  Stream<String?> get tokenRefreshStream => _tokenRefreshController.stream;
+  
+  @override
+  Future<RemoteMessage?> getInitialMessage() {
+    return _firebaseMessaging.getInitialMessage();
+  }
+  
+  @override
+  void dispose() {
+    _foregroundNotificationController.close();
+    _tokenRefreshController.close();
+  }
+}
+
+// This handler must be a top-level function
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // This function will be called when the app is in the background or terminated
+  if (kDebugMode) {
+    print("Handling a background message: ${message.messageId}");
+  }
+  // No need to create a notification as Firebase will automatically show it in the notification drawer
+}

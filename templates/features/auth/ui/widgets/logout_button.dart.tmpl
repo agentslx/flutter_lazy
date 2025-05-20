@@ -1,0 +1,71 @@
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
+
+import '../../services/user_service.dart';
+
+class LogoutButton extends StatelessWidget {
+  final bool isIcon;
+  final Color? color;
+
+  const LogoutButton({
+    super.key,
+    this.isIcon = false,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return isIcon
+        ? IconButton(
+            onPressed: () => _showLogoutDialog(context),
+            icon: Icon(
+              Icons.logout,
+              color: color ?? Theme.of(context).colorScheme.error,
+            ),
+          )
+        : ListTile(
+            leading: Icon(
+              Icons.logout,
+              color: color ?? Theme.of(context).colorScheme.error,
+            ),
+            title: const Text('Logout').tr(),
+            onTap: () => _showLogoutDialog(context),
+          );
+  }
+
+  Future<void> _showLogoutDialog(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout Confirmation').tr(),
+        content: const Text('Are you sure you want to logout?').tr(),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel').tr(),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Logout').tr(),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      // When logging out:
+      // 1. Call UserService logout which:
+      //    - Clears notification tokens via NotificationAuthService
+      //    - Calls auth repository logout
+      //    - Clears user data
+      await GetIt.instance<UserService>().logout();
+      
+      // Navigate to login screen
+      if (context.mounted) {
+        context.go('/login');
+      }
+    }
+  }
+}

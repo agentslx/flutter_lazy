@@ -1,0 +1,106 @@
+import 'dart:async';
+import 'package:injectable/injectable.dart';
+import 'package:flutter/foundation.dart';
+
+import '../data/repository/notification_repository.dart';
+import '../services/notification_service.dart';
+import '../../auth/data/repository/auth_repository.dart';
+
+/// Service responsible for coordinating between authentication and notifications.
+/// It listens for authentication events and handles notification permission requests
+/// and token registration after successful login.
+@lazySingleton
+class NotificationAuthService {
+  final NotificationService _notificationService;
+  final NotificationRepository _notificationRepository;
+  final AuthRepository _authRepository;
+  
+  StreamSubscription? _authSubscription;
+  bool _isInitialized = false;
+  
+  NotificationAuthService(
+    this._notificationService,
+    this._notificationRepository,
+    this._authRepository,
+  );
+  
+  /// Initialize the service by setting up Firebase and listeners
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+    
+    try {
+      // Initialize the notification service
+      await _notificationService.initialize();
+      
+      // Check if user is already authenticated
+      final authResult = await _authRepository.checkAuthenticated();
+      
+      authResult.fold(
+        (failure) => {
+          // Not authenticated, don't request permissions yet
+          if (kDebugMode) print('User not authenticated: ${failure.message}')
+        },
+        (isAuthenticated) async {
+          if (isAuthenticated) {
+            // User is already authenticated, request permissions and register token
+            await _requestPermissionAndRegisterToken();
+          }
+        },
+      );
+      
+      _isInitialized = true;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to initialize NotificationAuthService: $e');
+      }
+    }
+  }
+  
+  /// Request notification permissions and register the FCM token with the backend
+  Future<void> _requestPermissionAndRegisterToken() async {
+    try {
+      // Request permission
+      await _notificationService.requestPermission();
+      
+      // Register token with backend
+      await _notificationService.registerToken();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error requesting notification permissions: $e');
+      }
+    }
+  }
+  
+  /// Call this method after successful login
+  Future<void> onUserLoggedIn() async {
+    await _requestPermissionAndRegisterToken();
+  }
+  
+  /// Call this method after user logs out to clear notification tokens
+  Future<void> onUserLoggedOut() async {
+    try {
+      // Clear token from the backend
+      final currentToken = await FirebaseMessaging.instance.getToken();
+      if (currentToken != null) {
+        await _notificationRepository.clearPushToken(currentToken);
+      }
+      
+      // Delete the FCM token
+      await FirebaseMessaging.instance.deleteToken();
+      
+      if (kDebugMode) {
+        print('Successfully cleared notification token');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error clearing notification token: $e');
+      }
+    }
+  }
+  
+  /// Dispose resources
+  void dispose() {
+    _authSubscription?.cancel();
+    _authSubscription = null;
+  }
+}

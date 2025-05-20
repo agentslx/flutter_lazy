@@ -1,0 +1,149 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../cubits/notification_cubit/notification_cubit.dart';
+import '../../../data/models/notification_model.dart';
+import 'package:intl/intl.dart';
+
+class NotificationDetailsPage extends StatelessWidget {
+  final NotificationModel notification;
+
+  const NotificationDetailsPage({
+    super.key,
+    required this.notification,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Notification Details'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Card(
+              margin: EdgeInsets.zero,
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            notification.title,
+                            style: theme.textTheme.headline6,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _formatDateWithTime(notification.createdAt),
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    if (notification.imageUrl != null) ...[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          notification.imageUrl!,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          height: 200,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: double.infinity,
+                              height: 100,
+                              color: Colors.grey.shade300,
+                              child: const Icon(Icons.broken_image, color: Colors.grey),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    
+                    Text(
+                      notification.body,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    
+                    if (notification.data != null && notification.data!.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Additional Information',
+                        style: theme.textTheme.subtitle1,
+                      ),
+                      const SizedBox(height: 8),
+                      ..._buildAdditionalFields(notification.data!),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 24),
+            
+            if (!notification.isRead)
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    context
+                        .read<NotificationCubit>()
+                        .markAsRead(notification.id);
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Mark as Read'),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildAdditionalFields(Map<String, dynamic> data) {
+    final result = <Widget>[];
+    
+    data.forEach((key, value) {
+      if (key != 'gcm.notification.key' && key != 'google.c.a.e' && value != null) {
+        result.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$key: ',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Expanded(
+                  child: Text(
+                    value.toString(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+    });
+    
+    return result;
+  }
+
+  String _formatDateWithTime(DateTime date) {
+    return DateFormat.yMMMd().add_Hm().format(date);
+  }
+}

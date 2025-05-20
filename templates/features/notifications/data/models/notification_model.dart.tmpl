@@ -1,0 +1,41 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'notification_model.g.dart';
+
+@JsonSerializable()
+class NotificationModel {
+  final String id;
+  final String title;
+  final String body;
+  final String? imageUrl;
+  final Map<String, dynamic>? data;
+  final DateTime createdAt;
+  final bool isRead;
+
+  NotificationModel({
+    required this.id,
+    required this.title,
+    required this.body,
+    this.imageUrl,
+    this.data,
+    required this.createdAt,
+    this.isRead = false,
+  });
+
+  factory NotificationModel.fromJson(Map<String, dynamic> json) =>
+      _$NotificationModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NotificationModelToJson(this);
+
+  NotificationModel markAsRead() {
+    return NotificationModel(
+      id: id,
+      title: title,
+      body: body,
+      imageUrl: imageUrl,
+      data: data,
+      createdAt: createdAt,
+      isRead: true,
+    );
+  }
+}

@@ -1,0 +1,85 @@
+import 'package:flutter/foundation.dart';
+import 'package:injectable/injectable.dart';
+
+import '../data/models/user_model.dart';
+import '../data/repository/auth_repository.dart';
+import '../../notifications/services/notification_auth_service.dart';
+
+/// User service to manage user state and actions
+/// Provides APIs to get user details and logout event
+@lazySingleton
+class UserService {
+  final AuthRepository _authRepository;
+  final NotificationAuthService _notificationAuthService;
+  UserModel? _currentUser;
+  
+  // List of listeners for logout events
+  final List<void Function()> _logoutListeners = [];
+  
+  UserService(this._authRepository, this._notificationAuthService);
+  
+  /// Get the current user
+  UserModel? get currentUser => _currentUser;
+  
+  /// Set current user
+  void setCurrentUser(UserModel user) {
+    _currentUser = user;
+  }
+  
+  /// Clear current user
+  void clearCurrentUser() {
+    _currentUser = null;
+  }
+  
+  /// Initialize user service
+  Future<void> initialize() async {
+    try {
+      final result = await _authRepository.getCurrentUser();
+      result.fold(
+        (failure) => clearCurrentUser(),
+        (user) => setCurrentUser(user),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error initializing user service: $e');
+      }
+      clearCurrentUser();
+    }
+  }
+  
+  /// Logout the user
+  /// This will clear the auth token, notification token, and user data
+  Future<void> logout() async {
+    try {
+      // Clear notification token
+      await _notificationAuthService.onUserLoggedOut();
+      
+      // Call logout endpoint
+      await _authRepository.logout();
+      
+      // Clear current user
+      clearCurrentUser();
+      
+      // Notify listeners
+      for (final listener in _logoutListeners) {
+        listener();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error during logout: $e');
+      }
+      // Clear current user even if logout fails
+      clearCurrentUser();
+    }
+  }
+  
+  /// Register a listener for logout events
+  void addLogoutListener(void Function() listener) {
+    _logoutListeners.add(listener);
+  }
+  
+  /// Remove a logout listener
+  void removeLogoutListener(void Function() listener) {
+    _logoutListeners.remove(listener);
+  }
+}

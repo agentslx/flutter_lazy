@@ -6,6 +6,8 @@ import 'cubits/verify_email_cubit/verify_email_cubit.dart';
 import 'cubits/create_password_cubit/create_password_cubit.dart';
 import 'cubits/welcome_cubit/welcome_cubit.dart';
 import 'data/repository/auth_repository.dart';
+import 'services/user_service.dart';
+import '../notifications/services/notification_auth_service.dart';
 
 Future<void> init(GetIt getIt) async {
   // Repositories
@@ -16,8 +18,16 @@ Future<void> init(GetIt getIt) async {
     ),
   );
   
+  // Services
+  getIt.registerLazySingleton<UserService>(
+    () => UserService(
+      getIt<AuthRepository>(),
+      getIt<NotificationAuthService>(),
+    ),
+  );
+  
   // Cubits
-  getIt.registerFactory(() => LoginCubit(getIt()));
+  getIt.registerFactory(() => LoginCubit(getIt(), getIt<NotificationAuthService>()));
   getIt.registerFactory(() => RegisterCubit(getIt()));
   getIt.registerFactory(() => ResetPasswordCubit(getIt()));
   getIt.registerFactory(() => VerifyEmailCubit(getIt()));

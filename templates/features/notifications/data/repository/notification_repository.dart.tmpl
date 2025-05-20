@@ -1,0 +1,73 @@
+import 'package:dartz/dartz.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:injectable/injectable.dart';
+
+import '../../../../../core/models/failure.dart';
+import '../../../../../modules/rest_module/rest_module.dart';
+import '../datasources/notification_remote_datasource.dart';
+import '../models/notification_model.dart';
+
+abstract class NotificationRepository {
+  Future<Either<Failure, bool>> sendPushToken(String token);
+  Future<Either<Failure, bool>> clearPushToken(String token);
+  Future<Either<Failure, List<NotificationModel>>> getNotifications();
+  Future<Either<Failure, bool>> markAsRead(String notificationId);
+  Future<Either<Failure, bool>> markAllAsRead();
+}
+
+@LazySingleton(as: NotificationRepository)
+class NotificationRepositoryImpl implements NotificationRepository {
+  final NotificationRemoteDataSource _remoteDataSource;
+
+  NotificationRepositoryImpl(this._remoteDataSource);
+
+  @override
+  Future<Either<Failure, bool>> sendPushToken(String token) async {
+    try {
+      final result = await _remoteDataSource.sendPushToken(token);
+      return Right(result);
+    } catch (e) {
+      return Left(Failure('Failed to send push token: $e'));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, bool>> clearPushToken(String token) async {
+    try {
+      final result = await _remoteDataSource.clearPushToken(token);
+      return Right(result);
+    } catch (e) {
+      return Left(Failure('Failed to clear push token: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<NotificationModel>>> getNotifications() async {
+    try {
+      final notifications = await _remoteDataSource.getNotifications();
+      return Right(notifications);
+    } catch (e) {
+      return Left(Failure('Failed to get notifications: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> markAsRead(String notificationId) async {
+    try {
+      final result = await _remoteDataSource.markAsRead(notificationId);
+      return Right(result);
+    } catch (e) {
+      return Left(Failure('Failed to mark notification as read: $e'));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, bool>> markAllAsRead() async {
+    try {
+      final result = await _remoteDataSource.markAllAsRead();
+      return Right(result);
+    } catch (e) {
+      return Left(Failure('Failed to mark all notifications as read: $e'));
+    }
+  }
+}

@@ -1,0 +1,108 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../cubits/notification_cubit/notification_cubit.dart';
+import '../../router.dart';
+
+class NotificationBadge extends StatelessWidget {
+  final Widget child;
+  final double? top;
+  final double? right;
+  final Color? badgeColor;
+  final Color? textColor;
+  final double badgeSize;
+  final double textSize;
+  final bool showZero;
+
+  const NotificationBadge({
+    super.key,
+    required this.child,
+    this.top = -5,
+    this.right = -5,
+    this.badgeColor,
+    this.textColor,
+    this.badgeSize = 18,
+    this.textSize = 10,
+    this.showZero = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        child,
+        Positioned(
+          top: top,
+          right: right,
+          child: BlocBuilder<NotificationCubit, NotificationState>(
+            builder: (context, state) {
+              if (state is NotificationLoaded && (state.unreadCount > 0 || showZero)) {
+                return GestureDetector(
+                  onTap: () => NotificationsRouter.navigateToNotifications(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: badgeColor ?? Theme.of(context).colorScheme.error,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: BoxConstraints(
+                      minWidth: badgeSize,
+                      minHeight: badgeSize,
+                    ),
+                    child: Center(
+                      child: Text(
+                        state.unreadCount > 99 ? '99+' : state.unreadCount.toString(),
+                        style: TextStyle(
+                          color: textColor ?? Colors.white,
+                          fontSize: textSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// A convenience widget for a notification bell icon with badge
+class NotificationBellIcon extends StatelessWidget {
+  final double iconSize;
+  final Color? iconColor;
+  final Color? badgeColor;
+  final Color? textColor;
+  final VoidCallback? onPressed;
+
+  const NotificationBellIcon({
+    super.key,
+    this.iconSize = 24,
+    this.iconColor,
+    this.badgeColor,
+    this.textColor,
+    this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return NotificationBadge(
+      badgeColor: badgeColor,
+      textColor: textColor,
+      child: IconButton(
+        icon: Icon(
+          Icons.notifications_outlined,
+          color: iconColor,
+          size: iconSize,
+        ),
+        onPressed: onPressed ?? () => NotificationsRouter.navigateToNotifications(context),
+      ),
+    );
+  }
+}

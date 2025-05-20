@@ -1,0 +1,38 @@
+import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
+
+import 'cubits/notification_cubit/notification_cubit.dart';
+import 'data/datasources/notification_remote_datasource.dart';
+import 'data/repository/notification_repository.dart';
+import 'services/notification_service.dart';
+import 'services/notification_auth_service.dart';
+
+Future<void> init(GetIt getIt) async {
+  // Data sources
+  getIt.registerLazySingleton<NotificationRemoteDataSource>(
+    () => NotificationRemoteDataSourceImpl(getIt()),
+  );
+
+  // Repository
+  getIt.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(getIt()),
+  );
+
+  // Services
+  getIt.registerLazySingleton<NotificationService>(
+    () => NotificationServiceImpl(getIt()),
+  );
+  
+  getIt.registerLazySingleton<NotificationAuthService>(
+    () => NotificationAuthService(getIt(), getIt(), getIt()),
+  );
+  
+  // Initialize notification auth service
+  final notificationAuthService = getIt<NotificationAuthService>();
+  await notificationAuthService.initialize();
+  
+  // State management
+  getIt.registerFactory(
+    () => NotificationCubit(getIt(), getIt()),
+  );
+}

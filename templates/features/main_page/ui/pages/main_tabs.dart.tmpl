@@ -1,0 +1,119 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:{{ name.snakeCase() }}/di.dart';
+
+import '../../blocs/bottom_navigation_cubit/bottom_navigation_cubit.dart';
+import 'home_page.dart';
+import 'settings_page.dart';
+
+class MainTabs extends StatefulWidget {
+  const MainTabs({super.key, this.initPage});
+
+  final AppNavigation? initPage;
+
+  @override
+  State<MainTabs> createState() => _MainTabsState();
+}
+
+class _MainTabsState extends State<MainTabs> {
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.initPage != null) {
+      getIt<BottomNavigationCubit>().selectPage(widget.initPage!);
+    } else {
+      getIt<BottomNavigationCubit>().selectPage(AppNavigation.home);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => BlocProvider<BottomNavigationCubit>.value(
+        value: getIt<BottomNavigationCubit>(),
+        child: BlocBuilder<BottomNavigationCubit, BottomNavigationState>(
+          builder: (_, state) {
+            final pages = [
+              if (state.loadedPages.contains(AppNavigation.home)) const HomePage() else Container(),
+              if (state.loadedPages.contains(AppNavigation.menu)) const Placeholder(child: Center(child: Text('Menu Page'))) else Container(),
+              if (state.loadedPages.contains(AppNavigation.profile)) const Placeholder(child: Center(child: Text('Profile Page'))) else Container(),
+              if (state.loadedPages.contains(AppNavigation.settings)) const SettingsPage() else Container(),
+            ];
+
+            return Scaffold(
+              body: IndexedStack(
+                index: state.navigation.index,
+                children: pages,
+              ),
+              bottomNavigationBar: DecoratedBox(
+                decoration: BoxDecoration(
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 9,
+                      offset: const Offset(0, -1),
+                    ),
+                  ],
+                ),
+                child: BottomNavigationBar(
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
+                  selectedFontSize: 0,
+                  unselectedFontSize: 0,
+                  items: <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: Icon(
+                        state.navigation == AppNavigation.home
+                            ? Icons.home
+                            : Icons.home_outlined,
+                        color: state.navigation == AppNavigation.home 
+                            ? Theme.of(context).colorScheme.primary 
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      label: 'Home',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(
+                        state.navigation == AppNavigation.menu
+                            ? Icons.restaurant
+                            : Icons.restaurant_outlined,
+                        color: state.navigation == AppNavigation.menu 
+                            ? Theme.of(context).colorScheme.primary 
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      label: 'Menu',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(
+                        state.navigation == AppNavigation.profile
+                            ? Icons.person
+                            : Icons.person_outline,
+                        color: state.navigation == AppNavigation.profile 
+                            ? Theme.of(context).colorScheme.primary 
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      label: 'Profile',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(
+                        state.navigation == AppNavigation.settings
+                            ? Icons.settings
+                            : Icons.settings_outlined,
+                        color: state.navigation == AppNavigation.settings 
+                            ? Theme.of(context).colorScheme.primary 
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      label: 'Settings',
+                    ),
+                  ],
+                  currentIndex: state.navigation.index,
+                  onTap: (index) {
+                    getIt<BottomNavigationCubit>().selectPage(AppNavigation.values[index]);
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+      );
+}

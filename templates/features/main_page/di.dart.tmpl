@@ -1,0 +1,9 @@
+import 'package:get_it/get_it.dart';
+import 'blocs/bottom_navigation_cubit/bottom_navigation_cubit.dart';
+
+Future<void> initMainPageDi(GetIt getIt) async {
+  // Register bottom navigation cubit as a singleton
+  getIt.registerLazySingleton<BottomNavigationCubit>(
+    () => BottomNavigationCubit(),
+  );
+}

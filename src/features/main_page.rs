@@ -40,35 +40,85 @@ pub fn create_main_page_feature(project_dir: &Path) -> Result<()> {
     fs::create_dir_all(feature_dir.join("ui/widgets"))
         .context("Failed to create widgets directory")?;
     
-    // Create main page files
+    // Create main page files using templates
     println!("Creating main page files...");
     
-    // Create UI pages
-    let main_pages = ["main_page.dart", "navigation_shell.dart"];
-    for page in main_pages.iter() {
-        let page_path = feature_dir.join("ui/pages").join(page);
-        std::fs::write(&page_path, "// TODO: Implement main page\n")
-            .context(format!("Failed to create page file: {}", page))?;
-        created_files.push(format!("- UI Page: {}", page_path.display()));
+    // Copy template files for UI pages
+    let template_pages = [
+        ("main_tabs.dart.tmpl", "main_tabs.dart"),
+        ("home_page.dart.tmpl", "home_page.dart"),
+        ("settings_page.dart.tmpl", "settings_page.dart"),
+    ];
+    for (template, target) in template_pages.iter() {
+        let template_path = PathBuf::from("flutter_lazy/templates/features/main_page/ui/pages").join(template);
+        let target_path = feature_dir.join("ui/pages").join(target);
+        
+        if let Ok(content) = std::fs::read_to_string(&template_path) {
+            std::fs::write(&target_path, content)
+                .context(format!("Failed to create page file: {}", target))?;
+            created_files.push(format!("- UI Page: {}", target_path.display()));
+        } else {
+            // Fallback if template is not found
+            std::fs::write(&target_path, "// TODO: Implement main page\n")
+                .context(format!("Failed to create page file: {}", target))?;
+            created_files.push(format!("- UI Page: {}", target_path.display()));
+        }
     }
     
-    // Create navigation widgets
-    let widgets = ["bottom_navigation_bar.dart", "drawer_menu.dart"];
-    for widget in widgets.iter() {
-        let widget_path = feature_dir.join("ui/widgets").join(widget);
-        std::fs::write(&widget_path, "// TODO: Implement navigation widget\n")
-            .context(format!("Failed to create widget file: {}", widget))?;
-        created_files.push(format!("- UI Widget: {}", widget_path.display()));
+    // Copy template files for blocs
+    let template_blocs = [
+        ("bottom_navigation_cubit.dart.tmpl", "bottom_navigation_cubit.dart"),
+        ("bottom_navigation_state.dart.tmpl", "bottom_navigation_state.dart"),
+    ];
+    for (template, target) in template_blocs.iter() {
+        let template_path = PathBuf::from("flutter_lazy/templates/features/main_page/blocs/bottom_navigation_cubit").join(template);
+        let target_path = feature_dir.join("blocs/bottom_navigation_cubit").join(target);
+        
+        // Create directory if it doesn't exist
+        std::fs::create_dir_all(target_path.parent().unwrap())
+            .context("Failed to create blocs directory")?;
+            
+        if let Ok(content) = std::fs::read_to_string(&template_path) {
+            std::fs::write(&target_path, content)
+                .context(format!("Failed to create bloc file: {}", target))?;
+            created_files.push(format!("- State Management: {}", target_path.display()));
+        } else {
+            // Fallback if template is not found
+            std::fs::write(&target_path, "// TODO: Implement navigation state management\n")
+                .context(format!("Failed to create bloc file: {}", target))?;
+            created_files.push(format!("- State Management: {}", target_path.display()));
+        }
     }
     
-    // Create bloc files
-    let bloc_files = ["navigation_bloc.dart", "navigation_event.dart", "navigation_state.dart"];
-    for file in bloc_files.iter() {
-        let bloc_path = feature_dir.join("blocs").join(file);
-        std::fs::write(&bloc_path, "// TODO: Implement navigation bloc\n")
-            .context(format!("Failed to create bloc file: {}", file))?;
-        created_files.push(format!("- State Management: {}", bloc_path.display()));
+    // Copy router file
+    let router_template = PathBuf::from("flutter_lazy/templates/features/main_page/router.dart.tmpl");
+    let router_path = feature_dir.join("router.dart");
+    if let Ok(content) = std::fs::read_to_string(&router_template) {
+        std::fs::write(&router_path, content)
+            .context("Failed to create router file")?;
+        created_files.push(format!("- Router: {}", router_path.display()));
+    } else {
+        // Fallback if template is not found
+        std::fs::write(&router_path, "// TODO: Implement main page router\n")
+            .context("Failed to create router file")?;
+        created_files.push(format!("- Router: {}", router_path.display()));
     }
+    
+    // Copy DI file
+    let di_template = PathBuf::from("flutter_lazy/templates/features/main_page/di.dart.tmpl");
+    let di_path = feature_dir.join("di.dart");
+    if let Ok(content) = std::fs::read_to_string(&di_template) {
+        std::fs::write(&di_path, content)
+            .context("Failed to create DI file")?;
+        created_files.push(format!("- DI: {}", di_path.display()));
+    } else {
+        // Fallback if template is not found
+        std::fs::write(&di_path, "// TODO: Implement main page DI\n")
+            .context("Failed to create DI file")?;
+        created_files.push(format!("- DI: {}", di_path.display()));
+    }
+    
+    // We no longer need custom assets since we're using Material icons
     
     // Update main router file to import this feature's router
     update_main_router(project_dir, "main_page", "MainPage")?;
@@ -84,3 +134,5 @@ pub fn create_main_page_feature(project_dir: &Path) -> Result<()> {
     
     Ok(())
 }
+
+

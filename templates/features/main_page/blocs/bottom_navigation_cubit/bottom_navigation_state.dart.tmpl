@@ -1,0 +1,28 @@
+part of 'bottom_navigation_cubit.dart';
+
+enum AppNavigation { home, menu, profile, settings }
+
+class BottomNavigationState extends Equatable {
+  const BottomNavigationState({
+    required this.navigation,
+    required this.loadedPages,
+  });
+
+  final AppNavigation navigation;
+  final List<AppNavigation> loadedPages;
+
+  @override
+  List<Object?> get props => [
+        navigation,
+        loadedPages,
+      ];
+
+  BottomNavigationState copyWith({
+    AppNavigation? navigation,
+    List<AppNavigation>? loadedPages,
+  }) =>
+      BottomNavigationState(
+        navigation: navigation ?? this.navigation,
+        loadedPages: loadedPages ?? this.loadedPages,
+      );
+}

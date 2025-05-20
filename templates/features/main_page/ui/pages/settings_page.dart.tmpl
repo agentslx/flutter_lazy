@@ -1,0 +1,64 @@
+import 'package:flutter/material.dart';
+
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
+      body: ListView(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.dark_mode),
+            title: const Text('Dark Mode'),
+            trailing: Switch(
+              value: Theme.of(context).brightness == Brightness.dark,
+              onChanged: (_) {
+                // Theme switching logic would go here
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Theme switching not implemented yet')),
+                );
+              },
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.notifications),
+            title: const Text('Notifications'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Notifications settings not implemented yet')),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.language),
+            title: const Text('Language'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Language settings not implemented yet')),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.info),
+            title: const Text('About'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              showAboutDialog(
+                context: context,
+                applicationName: '{{ name.titleCase() }}',
+                applicationVersion: '1.0.0',
+                applicationLegalese: '© ${DateTime.now().year} Your Company',
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}

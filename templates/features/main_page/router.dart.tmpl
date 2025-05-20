@@ -1,0 +1,16 @@
+import 'package:go_router/go_router.dart';
+import '../blocs/bottom_navigation_cubit/bottom_navigation_cubit.dart';
+import 'ui/pages/main_tabs.dart';
+
+final class MainRouter {
+  static const String mainPage = '/mainPage';
+
+  static final List<RouteBase> routes = [
+    GoRoute(
+      path: mainPage,
+      builder: (context, state) => MainTabs(
+        initPage: (state.extra as Map<String, dynamic>? ?? {})['initPage'] as AppNavigation?,
+      ),
+    ),
+  ];
+}

@@ -1,0 +1,22 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+part 'bottom_navigation_state.dart';
+
+class BottomNavigationCubit extends Cubit<BottomNavigationState> {
+  BottomNavigationCubit() : super(const BottomNavigationState(navigation: AppNavigation.home, loadedPages: []));
+
+  void selectPage(AppNavigation navigation) {
+    if (!state.loadedPages.contains(navigation)) {
+      final updatedLoadedPages = [...state.loadedPages, navigation];
+      emit(
+        state.copyWith(
+          navigation: navigation,
+          loadedPages: updatedLoadedPages,
+        ),
+      );
+    } else {
+      emit(state.copyWith(navigation: navigation));
+    }
+  }
+}

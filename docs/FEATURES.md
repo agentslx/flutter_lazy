@@ -49,6 +49,11 @@ The cubit pattern follows a modern implementation with these characteristics:
    - `feature_cubit.dart`: Contains the cubit class and part declaration
    - `feature_state.dart`: Contains the state class as a part file
 
+2. **Simplified Templates**:
+   - Reduced boilerplate code in both cubit and state classes
+   - More straightforward method signatures with focused parameters
+   - Cleaner state management with intuitive helper methods
+
 2. **State Structure**:
    - Immutable state class using Equatable
    - FormzSubmissionStatus for tracking loading states
@@ -74,8 +79,9 @@ The cubit pattern follows a modern implementation with these characteristics:
 #### Repository Pattern
 - `feature_repository.dart`:
   - Abstract class defining the API contract
-  - Implementation class with error handling
+  - Implementation class with consistent error handling
   - Either<Failure, Success> return type for error handling
+  - Simplified method signatures with direct model parameters
 
 #### Data Sources
 - `feature_remote_datasource.dart`:
@@ -89,7 +95,10 @@ The cubit pattern follows a modern implementation with these characteristics:
   - Methods for CRUD operations on local data
 
 #### Models
-- `feature_model.dart`: Main data model with serialization
+- `feature_model.dart`: 
+  - Streamlined data model with JSON serialization
+  - Minimal fields focusing on essential data
+  - Clean copyWith implementation
 - `feature_response_model.dart`: API response structure
 - `failure.dart`: Feature-specific failure types
 - `enums.dart`: Feature-specific enumerations

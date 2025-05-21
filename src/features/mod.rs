@@ -179,7 +179,7 @@ fn generate_feature_files(
         fs::create_dir_all(feature_dir.join("cubits").join(format!("{}_cubit", snake_name)))
             .context("Failed to create cubit directory")?;
         
-        // Create cubit files
+        // Create cubit files with simplified boilerplate
         let cubit_file = feature_dir.join("cubits").join(format!("{}_cubit", snake_name)).join(format!("{}_cubit.dart", snake_name));
         copy_template_file(
             "features/common/cubits/feature_cubit/feature_cubit.dart.tmpl",
@@ -298,6 +298,8 @@ fn generate_feature_files(
     for file in &created_files {
         println!("{}", file);
     }
+    
+    println!("\nℹ️  Using simplified templates with reduced boilerplate");
     
     Ok(())
 }

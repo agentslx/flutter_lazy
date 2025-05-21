@@ -29,6 +29,10 @@ Version: 0.2.0
 
 - Added color coding to console output for better readability
 - Fixed path handling in project and feature generation
+- Simplified templates with reduced boilerplate code
+- Improved Cubit and State classes with cleaner method signatures
+- Streamlined repository pattern implementation
+- Optimized model classes for better readability and maintainability
 - Added validation for project and feature names
 - Improved error messaging with more helpful suggestions
 

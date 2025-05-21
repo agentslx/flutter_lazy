@@ -1,13 +1,10 @@
-import 'dart:developer';
-
+// filepath: /Users/hainv8196/Dropbox/Ohio/pixelfield/flutter_project/flutter_lazy/templates/features/common/cubits/feature_cubit/feature_cubit.dart.tmpl
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
 import '../../../../di.dart';
-import '../../data/models/{{ FEATURE_NAME_SNAKE }}_model.dart';
 import '../../data/repository/{{ FEATURE_NAME_SNAKE }}_repository.dart';
-import '../../services/{{ FEATURE_NAME_SNAKE }}_service.dart';
 
 part '{{ FEATURE_NAME_SNAKE }}_state.dart';
 
@@ -15,192 +12,27 @@ class {{ FEATURE_NAME_PASCAL }}Cubit extends Cubit<{{ FEATURE_NAME_PASCAL }}Stat
   {{ FEATURE_NAME_PASCAL }}Cubit() : super(const {{ FEATURE_NAME_PASCAL }}State());
 
   final {{ FEATURE_NAME_PASCAL }}Repository _repository = getIt<{{ FEATURE_NAME_PASCAL }}Repository>();
-  final {{ FEATURE_NAME_PASCAL }}Service _service = getIt<{{ FEATURE_NAME_PASCAL }}Service>();
 
   /// Initialize the cubit and load data
   Future<void> initialize() async {
-    if (state.status.isInProgress) return;
+    if (state.isLoading) return;
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
 
     try {
       final result = await _repository.getData();
       result.fold(
-        (failure) {
-          emit(
-            state.copyWith(
-              status: FormzSubmissionStatus.failure,
-              errorMessage: failure.message,
-            ),
-          );
-        },
-        (data) {
-          emit(state.copyWith(
-            status: FormzSubmissionStatus.success,
-            items: [data],
-          ));
-        },
-      );
-    } catch (e, stackTrace) {
-      log('Error in initialize', error: e, stackTrace: stackTrace);
-      emit(state.copyWith(
-        status: FormzSubmissionStatus.failure,
-        errorMessage: e.toString(),
-      ));
-    }
-  }
-
-  /// Load details for a specific item
-  Future<void> loadItemDetails(String id) async {
-    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
-
-    try {
-      // In a real implementation, you would fetch the specific item
-      // For the template, we'll just use sample data
-      final result = await _repository.getData();
-      result.fold(
-        (failure) {
-          emit(state.copyWith(
-            status: FormzSubmissionStatus.failure,
-            errorMessage: failure.message,
-          ));
-        },
-        (data) {
-          emit(state.copyWith(
-            status: FormzSubmissionStatus.success,
-            selectedItem: data,
-          ));
-        },
+        (failure) => emit(state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: failure.message,
+        )),
+        (_) => emit(state.copyWith(
+          status: FormzSubmissionStatus.success,
+        )),
       );
     } catch (e) {
       emit(state.copyWith(
         status: FormzSubmissionStatus.failure,
         errorMessage: e.toString(),
-      ));
-    }
-  }
-
-  /// Create a new item
-  Future<void> createItem({required String title, required String description}) async {
-    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
-
-    try {
-      final result = await _repository.create{{ FEATURE_NAME_PASCAL }}(
-        title: title,
-        description: description,
-      );
-
-      result.fold(
-        (failure) {
-          emit(state.copyWith(
-            status: FormzSubmissionStatus.failure,
-            errorMessage: failure.message,
-          ));
-        },
-        (item) {
-          final updatedItems = [...state.items, item];
-          emit(state.copyWith(
-            status: FormzSubmissionStatus.success,
-            items: updatedItems,
-            successMessage: '{{ FEATURE_NAME_SNAKE }}.item_created_success'.tr(),
-          ));
-        },
-      );
-    } catch (e) {
-      emit(state.copyWith(
-        status: FormzSubmissionStatus.failure,
-        errorMessage: e.toString(),
-      ));
-    }
-  }
-
-  /// Update an existing item
-  Future<void> updateItem({
-    required String id,
-    required String title,
-    required String description,
-  }) async {
-    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
-
-    try {
-      final result = await _repository.update{{ FEATURE_NAME_PASCAL }}(
-        id: id,
-        title: title,
-        description: description,
-      );
-
-      result.fold(
-        (failure) {
-          emit(state.copyWith(
-            status: FormzSubmissionStatus.failure,
-            errorMessage: failure.message,
-          ));
-        },
-        (updatedItem) {
-          final updatedItems = state.items.map((item) {
-            return item.id == id ? updatedItem : item;
-          }).toList();
-
-          emit(state.copyWith(
-            status: FormzSubmissionStatus.success,
-            items: updatedItems,
-            selectedItem: updatedItem,
-            successMessage: '{{ FEATURE_NAME_SNAKE }}.item_updated_success'.tr(),
-          ));
-        },
-      );
-    } catch (e) {
-      emit(state.copyWith(
-        status: FormzSubmissionStatus.failure,
-        errorMessage: e.toString(),
-      ));
-    }
-  }
-
-  /// Delete an item
-  Future<void> deleteItem(String id) async {
-    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
-
-    try {
-      final result = await _repository.delete{{ FEATURE_NAME_PASCAL }}(id);
-
-      result.fold(
-        (failure) {
-          emit(state.copyWith(
-            status: FormzSubmissionStatus.failure,
-            errorMessage: failure.message,
-          ));
-        },
-        (_) {
-          final filteredItems = state.items.where((item) => item.id != id).toList();
-          emit(state.copyWith(
-            status: FormzSubmissionStatus.success,
-            items: filteredItems,
-            selectedItem: null,
-            successMessage: '{{ FEATURE_NAME_SNAKE }}.item_deleted_success'.tr(),
-          ));
-        },
-      );
-    } catch (e) {
-      emit(state.copyWith(
-        status: FormzSubmissionStatus.failure,
-        errorMessage: e.toString(),
-      ));
-    }
-  }
-  
-  /// Start editing an item (prepare UI for editing)
-  void editItem({{ FEATURE_NAME_PASCAL }}Model item) {
-    emit(state.copyWith(
-      editingItem: item,
-    ));
-  }
-  
-  /// Clear any messages to prevent showing them multiple times
-  void clearMessages() {
-    if (state.errorMessage != null || state.successMessage != null) {
-      emit(state.copyWith(
-        errorMessage: null,
-        successMessage: null,
       ));
     }
   }

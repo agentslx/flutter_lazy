@@ -12,16 +12,40 @@ pub fn copy_template_dir(template_subpath: &str, destination: &Path) -> Result<(
         .join("templates")
         .join(template_subpath);
         
-    // For development, check local project path as well
-    let local_template_path = PathBuf::from("flutter_lazy/templates").join(template_subpath);
+    // For development, check local project paths
+    let paths_to_check = vec![
+        // Path when run from project root
+        PathBuf::from("templates").join(template_subpath),
+        // Path when run from inside project directory
+        PathBuf::from("flutter_lazy/templates").join(template_subpath),
+        // Current directory path
+        PathBuf::from("./templates").join(template_subpath),
+        // Path relative to workspace root
+        PathBuf::from("../templates").join(template_subpath),
+    ];
     
-    let source_path = if template_path.exists() {
-        template_path
-    } else if local_template_path.exists() {
-        local_template_path
-    } else {
+    // Try to find the template path
+    let mut source_path = template_path.clone();
+    let mut found = template_path.exists();
+    
+    if !found {
+        for path in &paths_to_check {
+            if path.exists() {
+                source_path = path.clone();
+                found = true;
+                break;
+            }
+        }
+    }
+    
+    if !found {
+        eprintln!("Searched in:");
+        eprintln!("  - {:?}", template_path);
+        for path in paths_to_check {
+            eprintln!("  - {:?}", path);
+        }
         return Err(anyhow::anyhow!("Template directory not found: {}", template_subpath));
-    };
+    }
     
     // Create destination if it doesn't exist
     std::fs::create_dir_all(destination)?;

@@ -99,35 +99,110 @@ flutter_lazy feature -n user_profile --no-repository --no-models
 flutter_lazy feature -n settings --no-state --no-repository --no-models --no-utils
 ```
 
-### Create a Complete Feature
+### Generate Features from API Specification
 
 ```bash
-flutter_lazy feature -n settings
+flutter_lazy from-api -u https://petstore.swagger.io/v2/swagger.json
 ```
 
-## Troubleshooting
+## Generate Features from Swagger/OpenAPI Specification
 
-### Template Not Found Errors
+This feature allows you to automatically generate Flutter feature modules based on a Swagger/OpenAPI specification.
 
-If you encounter "Template file not found" errors:
+### Command
 
-1. Check that the template directory is correct
-2. Verify the template file exists at the expected path
-3. Ensure the tool has read permissions for the templates
-4. If using a custom template path, verify it's correctly specified
+```bash
+flutter_lazy from-api [options]
+```
 
-### Component Generation Issues
+#### Options:
+- `-u, --url`: URL to the Swagger/OpenAPI JSON specification
+- `-f, --file`: Path to a local Swagger/OpenAPI JSON file
+- `-p, --project`: Project directory
+- `-d, --domains`: Only generate specific domains/tags (comma-separated)
+- `--data-only`: Skip generating cubits/state management (data layer only, default: true)
 
-If a component is missing or incorrect:
+### Interactive Mode
 
-1. Verify the feature was generated with the correct options
-2. Check the component files in the template directory
-3. Make sure the file naming convention matches the expected pattern
+If you run the command without options, the tool will prompt you for the required information:
 
-### Dependency Issues
+```bash
+flutter_lazy from-api
+```
 
-If generated code has missing dependencies:
+### What Gets Generated
 
-1. Make sure the project's pubspec.yaml has the required dependencies
-2. Run `flutter pub get` after generating the feature
-3. Verify that imports use the correct paths based on the project structure
+For each API domain (tag) in the Swagger specification, the tool will generate:
+
+1. **Model classes** - Based on API response schemas
+   - Properly typed Dart classes with JsonSerializable annotations
+   - Support for nullable fields based on required properties
+
+2. **Remote datasource** - For API communication
+   - Methods for each endpoint in the domain
+   - Proper error handling with Dio
+   - Type-safe return values
+
+3. **Local datasource** - For local caching
+   - Basic implementation with SharedPreferences
+   - Cache and retrieval methods
+
+4. **Repository** - Business logic layer
+   - Methods for each endpoint with proper error handling
+   - Either type for success/failure results using dartz
+   - Integration between remote and local datasources
+
+5. **Base feature structure** - Standard folder organization
+
+### Examples
+
+#### Generate Features from a Remote Swagger API
+
+```bash
+flutter_lazy from-api -u https://petstore.swagger.io/v2/swagger.json
+```
+
+#### Generate Features from a Local Swagger File
+
+```bash
+flutter_lazy from-api -f ./api-docs.json
+```
+
+#### Generate Only Specific Domains
+
+```bash
+flutter_lazy from-api -u https://petstore.swagger.io/v2/swagger.json -d "pet,store,user"
+```
+
+#### Generate Complete Features with State Management
+
+```bash
+flutter_lazy from-api -u https://petstore.swagger.io/v2/swagger.json --data-only=false
+```
+
+### Create a New Project with API Integration
+
+When creating a new project, you can now include Swagger/OpenAPI specifications directly during the project creation process:
+
+```bash
+flutter_lazy new -n project_name --api_url https://petstore.swagger.io/v2/swagger.json
+```
+
+Alternatively, you can use a local file:
+
+```bash
+flutter_lazy new -n project_name --api_file ./path/to/swagger.json
+```
+
+#### Options for API Integration:
+- `--api_url`: Initialize with a Swagger/OpenAPI spec URL
+- `--api_file`: Initialize with a local Swagger/OpenAPI spec file
+
+If these options are not provided, the tool will interactively ask if you want to include an API specification during project setup.
+
+The API integration offers several features:
+- Interactive workflow with retry options if loading fails
+- Option to filter specific domains/tags from the API
+- Automatic generation of models, datasources, and repositories based on the API specification
+
+This integration makes it simple to bootstrap your Flutter project with API-ready components from day one.

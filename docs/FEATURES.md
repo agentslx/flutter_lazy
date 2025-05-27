@@ -134,6 +134,48 @@ The cubit pattern follows a modern implementation with these characteristics:
   - Route definitions with parameters
   - Helper methods for navigation
 
+## API-Based Feature Generation
+
+The Flutter Project Generator can automatically create feature modules based on Swagger/OpenAPI specifications. This functionality is particularly useful for quickly implementing features that communicate with a backend API.
+
+### Command
+
+```bash
+flutter_lazy from-api -u https://petstore.swagger.io/v2/swagger.json
+```
+
+### Generated Structure
+
+API-based features follow the same directory structure as standard features, with automatic generation of:
+
+1. **Model Classes**
+   - Generated from API response schemas
+   - Properly typed Dart classes with JsonSerializable annotations
+   - Support for required/optional fields based on API spec
+
+2. **Data Layer**
+   - **Remote Datasource**: API client methods for each endpoint
+   - **Local Datasource**: Cache implementation for offline support
+   - **Repository**: Implementation with error handling and Either types
+
+### Benefits
+
+- **Time-saving**: Automatically generates boilerplate code
+- **Type-safety**: Properly typed models based on API specifications
+- **Consistency**: Follows project architecture patterns
+- **Maintainability**: Clean separation of concerns
+- **Error handling**: Built-in with proper failure types
+
+### Example
+
+For an API endpoint like `GET /pet/{petId}` tagged with "pet", the generator will:
+
+1. Create a `pet` feature with the standard structure
+2. Parse response model schema to create `Pet` data model
+3. Generate remote datasource with `getPetById(int petId)` method
+4. Implement repository with error handling
+5. Set up local caching in the local datasource
+
 ## Design Principles
 
 1. **Separation of Concerns**:

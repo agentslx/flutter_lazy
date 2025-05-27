@@ -1,0 +1,4254 @@
+/* Typeface */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 64px;
+gap: 64px;
+
+position: relative;
+width: 800px;
+height: 1624px;
+left: calc(50% - 800px/2 - 398.5px);
+top: calc(50% - 1624px/2 - 617px);
+
+/* Gray/6 */
+background: #FBFBFB;
+
+
+/* Frame 56 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 476px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 20px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+display: flex;
+align-items: center;
+text-transform: uppercase;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 20px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 60px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 20px;
+/* or 143% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/2 */
+border: 1px solid #4C4C4C;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 84px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 84px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 84px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 52px;
+
+/* heading/01 */
+font-family: 'Mazius Display';
+font-style: normal;
+font-weight: 400;
+font-size: 40px;
+line-height: 52px;
+/* identical to box height, or 130% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 84px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 84px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 72px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 72px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 72px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 40px;
+
+/* heading/02 */
+font-family: 'Mazius Display';
+font-style: normal;
+font-weight: 400;
+font-size: 32px;
+line-height: 40px;
+/* identical to box height, or 125% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 72px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 72px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 32px;
+
+/* heading/03 */
+font-family: 'Mazius Display';
+font-style: normal;
+font-weight: 400;
+font-size: 24px;
+line-height: 32px;
+/* identical to box height, or 133% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 4;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 24px;
+
+/* heading/04 */
+font-family: 'Mazius Display';
+font-style: normal;
+font-weight: 400;
+font-size: 18px;
+line-height: 24px;
+/* identical to box height, or 133% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 5;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 24px;
+
+/* heading/05 */
+font-family: 'Mazius Display';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 24px;
+/* identical to box height, or 150% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 6;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 20px;
+
+/* heading/06 */
+font-family: 'Mazius Display';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 1000004277 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 356px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 20px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+display: flex;
+align-items: center;
+text-transform: uppercase;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 20px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 60px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 20px;
+/* or 143% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/2 */
+border: 1px solid #4C4C4C;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 32px;
+
+/* lable/01 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 500;
+font-size: 24px;
+line-height: 32px;
+/* identical to box height, or 133% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 13px;
+
+/* lable/02 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 500;
+font-size: 18px;
+line-height: 24px;
+/* or 133% */
+/* leading-trim and text-edge are draft CSS properties.
+
+Read more: https://drafts.csswg.org/css-inline-3/#leading-trim
+*/
+leading-trim: both;
+text-edge: cap;
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 12px;
+
+/* lable/03 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 24px;
+/* or 150% */
+/* leading-trim and text-edge are draft CSS properties.
+
+Read more: https://drafts.csswg.org/css-inline-3/#leading-trim
+*/
+leading-trim: both;
+text-edge: cap;
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 4;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 10px;
+
+/* lable/04 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+line-height: 20px;
+/* or 143% */
+/* leading-trim and text-edge are draft CSS properties.
+
+Read more: https://drafts.csswg.org/css-inline-3/#leading-trim
+*/
+leading-trim: both;
+text-edge: cap;
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 5;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 9px;
+
+/* lable/05 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 16px;
+/* or 133% */
+/* leading-trim and text-edge are draft CSS properties.
+
+Read more: https://drafts.csswg.org/css-inline-3/#leading-trim
+*/
+leading-trim: both;
+text-edge: cap;
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 57 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 536px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 20px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+display: flex;
+align-items: center;
+text-transform: uppercase;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 20px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 92px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 60px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 20px;
+/* or 143% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/2 */
+border: 1px solid #4C4C4C;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 32px;
+
+/* body/01 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 400;
+font-size: 24px;
+line-height: 32px;
+/* identical to box height, or 133% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 24px;
+
+/* body/02 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 400;
+font-size: 18px;
+line-height: 24px;
+/* identical to box height, or 133% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 20px;
+
+/* body/04 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 4;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 14px;
+
+/* body/05 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 14px;
+/* identical to box height, or 117% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 5;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 32px;
+
+/* bodyb/01 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 700;
+font-size: 24px;
+line-height: 32px;
+/* identical to box height, or 133% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 64px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 6;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 24px;
+
+/* bodyb/02 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 700;
+font-size: 18px;
+line-height: 24px;
+/* identical to box height, or 133% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 56px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 7;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 20px;
+
+/* bodyb/04 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Row */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 8;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Cells */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+
+width: 672px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 600px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* GSDS */
+
+width: 600px;
+height: 14px;
+
+/* bodyb/05 */
+font-family: 'Satoshi';
+font-style: normal;
+font-weight: 700;
+font-size: 12px;
+line-height: 14px;
+/* identical to box height, or 117% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* .Base/Cell */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 16px 0px;
+gap: 10px;
+
+width: 36px;
+height: 50px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* GSDS */
+
+width: 36px;
+height: 18px;
+
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-size: 13px;
+line-height: 18px;
+/* identical to box height, or 138% */
+display: flex;
+align-items: center;
+
+/* Gray/2 */
+color: #4C4C4C;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 1 */
+
+width: 672px;
+height: 0px;
+
+/* Gray/5 */
+border: 1px solid #EEEEEE;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;

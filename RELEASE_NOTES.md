@@ -14,7 +14,14 @@ Version: 0.2.0
    - Implemented component selection for custom features
    - Improved validation and error handling
 
-3. **Robust Installation**
+3. **API-Based Feature Generation**
+   - Added support for generating features from Swagger/OpenAPI specifications
+   - Automatically generates data models, datasources, and repositories
+   - Supports loading specs from URLs or local files
+   - Allow filtering by specific API domains/tags
+   - Generates readable, type-safe Dart code with proper error handling
+
+4. **Robust Installation**
    - Enhanced install script with dependency checking
    - Added support for different installation directories
    - Improved error handling and recovery options

@@ -1,14 +1,16 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::fs;
 use anyhow::{Context, Result};
-use dialoguer::MultiSelect;
+use dialoguer::{MultiSelect, Input, Select};
 use console::style;
 use indicatif::{ProgressBar, ProgressStyle};
 use convert_case::{Case, Casing};
-use fs_extra::dir::{self, CopyOptions};
+use fs_extra::dir::CopyOptions;
 
 use crate::utils::copy_template_file;
-use crate::features::{create_feature, create_auth_feature, create_notification_feature, create_main_page_feature};
+use crate::features::{create_auth_feature, create_notification_feature, create_main_page_feature};
+use crate::swagger;
 
 pub struct ProjectConfig {
     pub name: String,
@@ -18,12 +20,20 @@ pub struct ProjectConfig {
     pub output_dir: PathBuf,
 }
 
+// API specification structure to hold Swagger source and domain filter
+pub struct ApiSpec {
+    pub source: swagger::SwaggerSource,
+    pub domains: Option<Vec<String>>,
+}
+
 pub struct FlutterProjectGenerator {
     config: ProjectConfig,
+    api_spec: Option<ApiSpec>,
 }
 
 impl FlutterProjectGenerator {
-    pub fn new(name: &str, output: &Option<PathBuf>, package_name: &Option<String>) -> Result<Self> {
+    pub fn new(name: &str, output: &Option<PathBuf>, package_name: &Option<String>,
+              api_url: &Option<String>, api_file: &Option<PathBuf>) -> Result<Self> {
         let output_dir = output.clone().unwrap_or_else(|| PathBuf::from("."));
         
         // Convert project name to snake_case for directory
@@ -55,6 +65,9 @@ impl FlutterProjectGenerator {
             .iter()
             .map(|&i| available_features[i].to_string())
             .collect();
+
+        // Process API specification if provided
+        let api_spec = Self::process_api_spec(api_url, api_file)?;
         
         Ok(Self {
             config: ProjectConfig {
@@ -64,18 +77,246 @@ impl FlutterProjectGenerator {
                 features: selected_features,
                 output_dir: output_dir.join(project_dir_name),
             },
+            api_spec,
         })
     }
     
+    /// Process API specification from URL or file
+    fn process_api_spec(
+        api_url: &Option<String>, 
+        api_file: &Option<PathBuf>
+    ) -> Result<Option<ApiSpec>> {
+        // If no API source is provided, ask if user wants to include an API spec
+        if api_url.is_none() && api_file.is_none() {
+            let include_api = Select::new()
+                .with_prompt("Would you like to generate features from a Swagger/OpenAPI specification?")
+                .items(&["No", "Yes, from URL", "Yes, from local file"])
+                .default(0)
+                .interact()?;
+            
+            if include_api == 0 {
+                // User chose not to include an API spec
+                return Ok(None);
+            }
+            
+            if include_api == 1 {
+                // User chose to include an API spec from URL
+                let url = Self::prompt_for_api_url(None)?;
+                return Self::create_api_spec(Some(url), None);
+            } else {
+                // User chose to include an API spec from file
+                let file_path = Self::prompt_for_api_file(None)?;
+                return Self::create_api_spec(None, Some(file_path));
+            }
+        }
+        
+        // Process provided API URL or file
+        Self::create_api_spec(api_url.clone(), api_file.clone())
+    }
+
+    /// Create API spec from URL or file with proper error handling and retry
+    fn create_api_spec(
+        api_url: Option<String>,
+        api_file: Option<PathBuf>
+    ) -> Result<Option<ApiSpec>> {
+        // Process API URL if provided
+        if let Some(url) = api_url {
+            println!("Loading API specification from URL: {}", style(&url).bold());
+            
+            // Attempt to load the Swagger spec
+            match Self::try_load_swagger_from_url(&url) {
+                Ok(source) => {
+                    // Ask for domain filter
+                    let domains = Self::prompt_for_domains()?;
+                    
+                    return Ok(Some(ApiSpec {
+                        source,
+                        domains,
+                    }));
+                },
+                Err(err) => {
+                    // Handle error and offer retry
+                    println!("{}: {}", style("Error loading API specification").red(), err);
+                    let retry = Select::new()
+                        .with_prompt("What would you like to do?")
+                        .items(&["Try a different URL", "Try a local file instead", "Skip API specification"])
+                        .default(0)
+                        .interact()?;
+                    
+                    match retry {
+                        0 => { // Try different URL
+                            let new_url = Self::prompt_for_api_url(None)?;
+                            return Self::create_api_spec(Some(new_url), None);
+                        },
+                        1 => { // Try local file
+                            let file_path = Self::prompt_for_api_file(None)?;
+                            return Self::create_api_spec(None, Some(file_path));
+                        },
+                        _ => { // Skip
+                            return Ok(None);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Process API file if provided
+        if let Some(path) = api_file {
+            println!("Loading API specification from file: {}", style(path.display()).bold());
+            
+            // Attempt to load the Swagger spec
+            match Self::try_load_swagger_from_file(&path) {
+                Ok(source) => {
+                    // Ask for domain filter
+                    let domains = Self::prompt_for_domains()?;
+                    
+                    return Ok(Some(ApiSpec {
+                        source,
+                        domains,
+                    }));
+                },
+                Err(err) => {
+                    // Handle error and offer retry
+                    println!("{}: {}", style("Error loading API specification").red(), err);
+                    let retry = Select::new()
+                        .with_prompt("What would you like to do?")
+                        .items(&["Try a different file", "Try a URL instead", "Skip API specification"])
+                        .default(0)
+                        .interact()?;
+                    
+                    match retry {
+                        0 => { // Try different file
+                            let new_path = Self::prompt_for_api_file(None)?;
+                            return Self::create_api_spec(None, Some(new_path));
+                        },
+                        1 => { // Try URL
+                            let url = Self::prompt_for_api_url(None)?;
+                            return Self::create_api_spec(Some(url), None);
+                        },
+                        _ => { // Skip
+                            return Ok(None);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // No API source provided
+        Ok(None)
+    }
+
+    /// Prompt user for API URL with validation
+    fn prompt_for_api_url(default_url: Option<&str>) -> Result<String> {
+        let default = default_url.unwrap_or("https://petstore.swagger.io/v2/swagger.json");
+        
+        let url = Input::<String>::new()
+            .with_prompt("Enter the Swagger/OpenAPI URL")
+            .default(default.into())
+            .validate_with(|input: &String| -> Result<(), String> {
+                if !input.starts_with("http://") && !input.starts_with("https://") {
+                    return Err("URL must start with http:// or https://".into());
+                }
+                Ok(())
+            })
+            .interact()?;
+        
+        Ok(url)
+    }
+
+    /// Prompt user for API file path with validation
+    fn prompt_for_api_file(default_path: Option<&PathBuf>) -> Result<PathBuf> {
+        let default_str = match default_path {
+            Some(p) => p.to_string_lossy().to_string(),
+            None => String::from("./api-spec.json"),
+        };
+        
+        let path_str = Input::<String>::new()
+            .with_prompt("Enter the Swagger/OpenAPI file path")
+            .default(default_str)
+            .validate_with(|input: &String| -> Result<(), String> {
+                let path = PathBuf::from(input);
+                if !path.exists() {
+                    return Err(format!("File does not exist: {}", input));
+                }
+                Ok(())
+            })
+            .interact()?;
+        
+        Ok(PathBuf::from(path_str))
+    }
+
+    /// Prompt user for domains to include (optional)
+    fn prompt_for_domains() -> Result<Option<Vec<String>>> {
+        let include_filter = Select::new()
+            .with_prompt("Would you like to filter API domains/tags?")
+            .items(&["No, include all domains", "Yes, specify domains to include"])
+            .default(0)
+            .interact()?;
+        
+        if include_filter == 0 {
+            return Ok(None);
+        }
+        
+        let domains_str = Input::<String>::new()
+            .with_prompt("Enter domain names to include (comma-separated)")
+            .interact()?;
+        
+        let domains = domains_str
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+            .collect::<Vec<String>>();
+        
+        if domains.is_empty() {
+            return Ok(None);
+        }
+        
+        Ok(Some(domains))
+    }
+
+    /// Try to load a Swagger spec from URL with error handling
+    fn try_load_swagger_from_url(url: &str) -> Result<swagger::SwaggerSource> {
+        Ok(swagger::SwaggerSource::Url(url.to_string()))
+    }
+
+    /// Try to load a Swagger spec from file with error handling
+    fn try_load_swagger_from_file(path: &PathBuf) -> Result<swagger::SwaggerSource> {
+        if !path.exists() {
+            return Err(anyhow::anyhow!("File does not exist: {:?}", path));
+        }
+        Ok(swagger::SwaggerSource::File(path.clone()))
+    }
+
     pub fn generate(&self) -> Result<()> {
         self.create_base_project()?;
         self.setup_project_structure()?;
         self.create_flavors()?;
         self.add_features()?;
         self.update_pubspec()?;
+        self.process_api_features()?;
         
         Ok(())
     }
+    
+    /// Process API features if API spec is provided
+    fn process_api_features(&self) -> Result<()> {
+        if let Some(api_spec) = &self.api_spec {
+            println!("{}", style("Generating API features...").bold().green());
+            
+            swagger::generate_api_features(
+                &self.config.output_dir,
+                api_spec.source.clone(),
+                api_spec.domains.clone(),
+                true // data_only by default
+            )?;
+            
+            println!("✅ API features generated");
+        }
+        
+        Ok(())
+    }
+    
+    // ... rest of the implementation ...
     
     fn create_base_project(&self) -> Result<()> {
         println!("Creating base Flutter project...");
@@ -133,7 +374,6 @@ impl FlutterProjectGenerator {
             "widgets/cards",
             "widgets/dialogs",
             "widgets/inputs"
-            // Note: We're excluding 'generated' directory which will be created by build_runner
         ];
         
         let pb = self.create_progress_bar(directories.len() as u64);
@@ -144,51 +384,20 @@ impl FlutterProjectGenerator {
             pb.inc(1);
         }
         
-        // Create config files
-        self.copy_template_file("common/app_structure/config/app_styles.dart.tmpl", &lib_dir.join("config/app_styles.dart"), &[])?;
-        self.copy_template_file("common/app_structure/config/app_theme.dart.tmpl", &lib_dir.join("config/app_theme.dart"), &[])?;
-        self.copy_template_file("common/app_structure/config/app_constants.dart.tmpl", &lib_dir.join("config/app_constants.dart"), &[])?;
-        self.copy_template_file("common/app_structure/config/app_routes.dart.tmpl", &lib_dir.join("config/app_routes.dart"), &[])?;
+        // Create core files and other setup
+        // Copy base core files
+        let core_files = [
+            ("core/failures/failure.dart", "core/failures/failure.dart"),
+            ("core/utils/logger.dart", "core/utils/logger.dart"),
+        ];
         
-        // Create core utility files
-        self.copy_template_file("common/app_structure/core/extensions/string_extensions.dart.tmpl", &lib_dir.join("core/extensions/string_extensions.dart"), &[])?;
-        self.copy_template_file("common/app_structure/core/extensions/context_extensions.dart.tmpl", &lib_dir.join("core/extensions/context_extensions.dart"), &[])?;
-        self.copy_template_file("common/app_structure/core/utils/logger.dart.tmpl", &lib_dir.join("core/utils/logger.dart"), &[])?;
-        self.copy_template_file("common/app_structure/core/utils/validators.dart.tmpl", &lib_dir.join("core/utils/validators.dart"), &[])?;
-        self.copy_template_file("common/app_structure/core/failures/failure.dart.tmpl", &lib_dir.join("core/failures/failure.dart"), &[])?;
-        self.copy_template_file("common/app_structure/core/failures/exceptions.dart.tmpl", &lib_dir.join("core/failures/exceptions.dart"), &[])?;
-        
-        // Create form validators
-        self.copy_template_file("common/app_structure/core/form/email_input.dart.tmpl", &lib_dir.join("core/form/email_input.dart"), &[])?;
-        self.copy_template_file("common/app_structure/core/form/password_input.dart.tmpl", &lib_dir.join("core/form/password_input.dart"), &[])?;
-        self.copy_template_file("common/app_structure/core/form/name_input.dart.tmpl", &lib_dir.join("core/form/name_input.dart"), &[])?;
-        self.copy_template_file("common/app_structure/core/form/confirmed_password_input.dart.tmpl", &lib_dir.join("core/form/confirmed_password_input.dart"), &[])?;
-        
-        // Create common widgets
-        self.copy_template_file("common/app_structure/widgets/buttons/app_button.dart.tmpl", &lib_dir.join("widgets/buttons/app_button.dart"), &[])?;
-        self.copy_template_file("common/app_structure/widgets/inputs/app_text_field.dart.tmpl", &lib_dir.join("widgets/inputs/app_text_field.dart"), &[])?;
-        self.copy_template_file("common/app_structure/widgets/dialogs/app_dialog.dart.tmpl", &lib_dir.join("widgets/dialogs/app_dialog.dart"), &[])?;
-        self.copy_template_file("common/app_structure/widgets/cards/info_card.dart.tmpl", &lib_dir.join("widgets/cards/info_card.dart"), &[])?;
-        
-        // Create modules files
-        self.copy_template_file("common/app_structure/modules/local_storage_module/local_storage.dart.tmpl", &lib_dir.join("modules/local_storage_module/local_storage.dart"), &[])?;
-        self.copy_template_file("common/app_structure/modules/local_storage_module/local_storage_module.dart.tmpl", &lib_dir.join("modules/local_storage_module/local_storage_module.dart"), &[])?;
-        self.copy_template_file("common/app_structure/modules/local_storage_module/shared_pref_impl.dart.tmpl", &lib_dir.join("modules/local_storage_module/shared_pref_impl.dart"), &[])?;
-        
-        self.copy_template_file("common/app_structure/modules/rest_module/api_client.dart.tmpl", &lib_dir.join("modules/rest_module/api_client.dart"), &[])?;
-        self.copy_template_file("common/app_structure/modules/rest_module/restful_module.dart.tmpl", &lib_dir.join("modules/rest_module/restful_module.dart"), &[])?;
-        self.copy_template_file("common/app_structure/modules/rest_module/restful_module_dio_impl.dart.tmpl", &lib_dir.join("modules/rest_module/restful_module_dio_impl.dart"), &[])?;
-        self.copy_template_file("common/app_structure/modules/rest_module/cancel_token.dart.tmpl", &lib_dir.join("modules/rest_module/cancel_token.dart"), &[])?;
-        self.copy_template_file("common/app_structure/modules/rest_module/options.dart.tmpl", &lib_dir.join("modules/rest_module/options.dart"), &[])?;
-        self.copy_template_file("common/app_structure/modules/rest_module/response.dart.tmpl", &lib_dir.join("modules/rest_module/response.dart"), &[])?;
-        
-        self.copy_template_file("common/app_structure/modules/bloc/bloc_observer.dart.tmpl", &lib_dir.join("modules/bloc/bloc_observer.dart"), &[])?;
-        
-        self.copy_template_file("common/app_structure/modules/push_notification/notification_module.dart.tmpl", &lib_dir.join("modules/push_notification/notification_module.dart"), &[])?;
-        
-        // Create helper files
-        self.copy_template_file("common/app_structure/helpers/date_time_helper.dart.tmpl", &lib_dir.join("helpers/date_time_helper.dart"), &[])?;
-        self.copy_template_file("common/app_structure/helpers/ui_helper.dart.tmpl", &lib_dir.join("helpers/ui_helper.dart"), &[])?;
+        for (src, dest) in core_files.iter() {
+            self.copy_template_file(
+                src, 
+                &self.config.output_dir.join("lib").join(dest),
+                &[("{package_name}", &self.config.package_name)]
+            )?;
+        }
         
         pb.finish_and_clear();
         println!("✅ Directory structure created");
@@ -197,41 +406,36 @@ impl FlutterProjectGenerator {
     
     fn create_flavors(&self) -> Result<()> {
         println!("Setting up flavors...");
-        if self.config.flavors.is_empty() {
-            println!("No flavors selected, skipping");
-            return Ok(());
-        }
+        let pb = self.create_progress_bar(self.config.flavors.len() as u64 + 1);
         
-        let pb = self.create_progress_bar(2);
+        // Create main.dart that uses flavors
+        self.copy_template_file(
+            "common/main_flavor.dart.tmpl",
+            &self.config.output_dir.join("lib/main.dart"),
+            &[("{package_name}", &self.config.package_name)]
+        )?;
+        pb.inc(1);
         
-        // Create main_*.dart files for each flavor
+        // Create a main file for each flavor
         for flavor in &self.config.flavors {
             self.copy_template_file(
-                &format!("common/main_flavor.dart.tmpl"),
-                &self.config.output_dir.join("lib").join(format!("main_{}.dart", flavor)),
-                &[("FLAVOR", flavor)]
+                "common/main_flavor.dart.tmpl",
+                &self.config.output_dir.join(&format!("lib/main_{}.dart", flavor)),
+                &[
+                    ("{package_name}", &self.config.package_name),
+                    ("{flavor}", flavor),
+                    ("{flavor_title}", &(flavor[0..1].to_uppercase() + &flavor[1..]))
+                ]
             )?;
+            pb.inc(1);
         }
-        pb.inc(1);
         
-        // Run flutter_flavorizr to setup flavors
-        // First, update pubspec.yaml to include flavorizr configuration
-        self.add_flavorizr_config()?;
-        
-        // Run flutter pub get and flutter pub run flutter_flavorizr
-        Command::new("flutter")
-            .current_dir(&self.config.output_dir)
-            .args(&["pub", "get"])
-            .output()
-            .context("Failed to run flutter pub get")?;
-            
-        Command::new("flutter")
-            .current_dir(&self.config.output_dir)
-            .args(&["pub", "run", "flutter_flavorizr"])
-            .output()
-            .context("Failed to run flutter_flavorizr")?;
-        
-        pb.inc(1);
+        // Create flavors.dart to define flavor enum
+        self.copy_template_file(
+            "common/flavors.dart",
+            &self.config.output_dir.join("lib/flavors.dart"),
+            &[("{flavors}", &self.config.flavors.join(", "))]
+        )?;
         
         pb.finish_and_clear();
         println!("✅ Flavors setup completed");
@@ -239,235 +443,181 @@ impl FlutterProjectGenerator {
     }
     
     fn add_features(&self) -> Result<()> {
-        println!("Adding features...");
+        println!("Adding selected features...");
         let pb = self.create_progress_bar(self.config.features.len() as u64);
         
         for feature in &self.config.features {
             match feature.as_str() {
                 "auth" => {
                     create_auth_feature(&self.config.output_dir)?;
-                }
+                },
                 "notifications" => {
                     create_notification_feature(&self.config.output_dir)?;
-                }
+                },
                 "main_page" => {
                     create_main_page_feature(&self.config.output_dir)?;
+                },
+                _ => {
+                    println!("Skipping unknown feature: {}", feature);
                 }
-                _ => println!("Unknown feature: {}", feature),
             }
             pb.inc(1);
         }
         
         pb.finish_and_clear();
-        println!("✅ Features added");
+        println!("✅ All selected features added");
         Ok(())
     }
     
     fn update_pubspec(&self) -> Result<()> {
         println!("Updating pubspec.yaml...");
         
-        // Add required dependencies based on the architecture document
+        // Read the current pubspec
         let pubspec_path = self.config.output_dir.join("pubspec.yaml");
-        let pubspec_content = std::fs::read_to_string(&pubspec_path)?;
+        let mut pubspec_content = fs::read_to_string(&pubspec_path)
+            .context("Failed to read pubspec.yaml")?;
         
-        let mut new_pubspec = pubspec_content;
-        
-        // Add dependencies section with all the libraries mentioned in ARCHITECTURE.md
+        // Add dependencies
         let dependencies = r#"
   # State Management
   flutter_bloc: ^8.1.3
   equatable: ^2.0.5
   
-  # Network
-  dio: ^5.3.3
-  pretty_dio_logger: ^1.3.1
-  dartz: ^0.10.1
-  
   # Dependency Injection
   get_it: ^7.6.4
+  injectable: ^2.3.2
   
-  # Routing
-  go_router: ^12.0.0
+  # Networking
+  dio: ^5.3.3
+  http: ^1.1.0
+  connectivity_plus: ^5.0.1
   
-  # Storage
+  # Local Storage
   shared_preferences: ^2.2.2
-  path_provider: ^2.1.1
   
-  # UI
-  flutter_screenutil: ^5.9.0
-  flutter_svg: ^2.0.7
-  google_fonts: ^6.1.0
-  flutter_adaptive_scaffold: ^0.1.7
-  
-  # Others
-  easy_localization: ^3.0.3
-  formz: ^0.6.1
+  # Utilities
+  dartz: ^0.10.1
+  logger: ^2.0.2
+  intl: ^0.18.1
   json_annotation: ^4.8.1
-  logger: ^2.0.2+1
-  sentry_flutter: ^7.10.1
   
-  # Firebase
-  firebase_core: ^2.16.0
-  firebase_messaging: ^14.6.8
+  # UI utilities
+  cached_network_image: ^3.3.0
+  flutter_svg: ^2.0.9
+  shimmer: ^3.0.0"#;
+        
+        // Add development dependencies
+        let dev_dependencies = r#"
+  # Flutter flavorizr for handling flavors
+  flutter_flavorizr: ^2.2.1
   
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  
-  # Linting
-  flutter_lints: ^3.0.0
-  
-  # Code Generation
+  # Code generation
   build_runner: ^2.4.6
   json_serializable: ^6.7.1
-  flutter_gen: ^5.3.2
-  
-  # Flavor Management
-  flutter_flavorizr: ^2.2.1
-"#;
+  injectable_generator: ^2.4.1"#;
         
-        // Replace the original dependencies section with our custom one
-        let deps_pattern = "dependencies:\n  flutter:\n    sdk: flutter";
-        if new_pubspec.contains(deps_pattern) {
-            new_pubspec = new_pubspec.replace(deps_pattern, &format!("dependencies:\n  flutter:\n    sdk: flutter{}", dependencies));
-            
-            // Remove the default dev_dependencies section to avoid duplication
-            let dev_deps_pattern = "dev_dependencies:\n  flutter_test:\n    sdk: flutter\n\n  # The \"flutter_lints\"";
-            if new_pubspec.contains(dev_deps_pattern) {
-                // Find where the section ends (at the next top-level section)
-                if let Some(dev_deps_start) = new_pubspec.find(dev_deps_pattern) {
-                    if let Some(next_section) = new_pubspec[dev_deps_start..].find("\n# ") {
-                        let section_end = dev_deps_start + next_section;
-                        let before_section = &new_pubspec[0..dev_deps_start];
-                        let after_section = &new_pubspec[section_end..];
-                        new_pubspec = format!("{}{}", before_section, after_section);
-                    }
-                }
-            }
-            
-            std::fs::write(&pubspec_path, new_pubspec)?;
-        }
+        // Update pubspec content
+        pubspec_content = pubspec_content.replace(
+            "dependencies:\n  flutter:", 
+            &format!("dependencies:\n  flutter:{}", dependencies)
+        );
         
-        println!("✅ Pubspec.yaml updated");
+        pubspec_content = pubspec_content.replace(
+            "dev_dependencies:\n  flutter_test:", 
+            &format!("dev_dependencies:\n  flutter_test:{}", dev_dependencies)
+        );
+        
+        // Write back to pubspec.yaml
+        fs::write(&pubspec_path, pubspec_content)
+            .context("Failed to update pubspec.yaml")?;
+        
+        println!("✅ pubspec.yaml updated");
         Ok(())
     }
     
     fn setup_assets(&self) -> Result<()> {
-        println!("Setting up assets...");
+        println!("Setting up asset directories...");
         
-        // Create assets directory structure if it doesn't exist
-        let assets_dir = self.config.output_dir.join("assets");
         let asset_dirs = [
-            "icons", "images", "fonts", "i18n", 
-            "firebase/dev", "firebase/stage", "firebase/prod"
+            "assets/fonts",
+            "assets/i18n",
+            "assets/images",
+            "assets/colors",
         ];
         
-        for dir in asset_dirs.iter() {
-            std::fs::create_dir_all(assets_dir.join(dir))
+        for dir in &asset_dirs {
+            fs::create_dir_all(self.config.output_dir.join(dir))
                 .context(format!("Failed to create asset directory: {}", dir))?;
         }
         
-        // Copy placeholder assets from templates
-        self.copy_template_dir("assets", &assets_dir)?;
+        // Copy placeholder assets
+        self.copy_template_file(
+            "assets/i18n/en.json",
+            &self.config.output_dir.join("assets/i18n/en.json"),
+            &[]
+        )?;
         
-        println!("✅ Assets setup completed");
+        // Copy placeholder images
+        self.copy_template_file(
+            "assets/images/placeholder.png",
+            &self.config.output_dir.join("assets/images/placeholder.png"),
+            &[]
+        )?;
+        
+        // Update pubspec to include assets
+        let pubspec_path = self.config.output_dir.join("pubspec.yaml");
+        let mut pubspec_content = fs::read_to_string(&pubspec_path)
+            .context("Failed to read pubspec.yaml")?;
+        
+        let assets_section = r#"
+  assets:
+    - assets/i18n/
+    - assets/images/
+    
+  fonts:
+    - family: AppIcons
+      fonts:
+        - asset: assets/fonts/AppIcons.ttf"#;
+        
+        // Add assets section before the end of the file
+        if !pubspec_content.contains("assets:") {
+            pubspec_content.push_str(assets_section);
+            fs::write(&pubspec_path, pubspec_content)
+                .context("Failed to update pubspec.yaml with assets")?;
+        }
+        
+        println!("✅ Asset directories created");
         Ok(())
     }
     
     fn add_flavorizr_config(&self) -> Result<()> {
-        println!("Configuring flavorizr...");
+        println!("Adding flavorizr configuration...");
         
         let pubspec_path = self.config.output_dir.join("pubspec.yaml");
-        let pubspec_content = std::fs::read_to_string(&pubspec_path)?;
+        let mut pubspec_content = fs::read_to_string(&pubspec_path)
+            .context("Failed to read pubspec.yaml")?;
         
-        // Create flavorizr configuration
-        let mut flavorizr_config = String::from("\nflutter_flavorizr:\n");
-        flavorizr_config.push_str("  app:\n");
-        flavorizr_config.push_str("    android:\n      flavorDimensions: \"flavor\"\n");
-        flavorizr_config.push_str("    ios: {}\n\n");
-        
-        flavorizr_config.push_str("  flavors:\n");
-        
+        // Generate flavorizr config
+        let mut flavor_configs = String::new();
         for flavor in &self.config.flavors {
-            flavorizr_config.push_str(&format!("    {}:\n", flavor));
-            flavorizr_config.push_str(&format!("      app:\n"));
-            flavorizr_config.push_str(&format!("        name: \"{} {}\"\n", 
-                self.config.name.to_case(Case::Title), flavor.to_case(Case::Title)));
-                
-            // Convert project name to package-compatible format
-            let package_name_base = self.config.package_name.clone();
-            flavorizr_config.push_str(&format!("      android:\n"));
-            flavorizr_config.push_str(&format!("        applicationId: \"{}.{}\"\n", package_name_base, flavor));
-            
-            flavorizr_config.push_str(&format!("      ios:\n"));
-            flavorizr_config.push_str(&format!("        bundleId: \"{}.{}\"\n", package_name_base, flavor));
+            flavor_configs.push_str(&format!("\n    {}: {{}}", flavor));
         }
         
-        // Append flavorizr configuration to pubspec.yaml
-        let new_pubspec = format!("{}{}", pubspec_content, flavorizr_config);
-        std::fs::write(pubspec_path, new_pubspec)?;
+        let flavorizr_config = format!(r#"
+flutter_flavorizr:
+  flavors: {{{}}}"#, flavor_configs);
+        
+        // Add flavorizr config to pubspec
+        pubspec_content.push_str(&flavorizr_config);
+        fs::write(&pubspec_path, pubspec_content)
+            .context("Failed to add flavorizr config to pubspec.yaml")?;
         
         println!("✅ Flavorizr configuration added");
         Ok(())
     }
     
     fn copy_template_dir(&self, template_subpath: &str, destination: &Path) -> Result<()> {
-        let template_path = std::env::current_exe()?
-            .parent()
-            .context("Failed to get executable directory")?
-            .join("templates")
-            .join(template_subpath);
-            
-        // For development, check multiple local project paths
-        let paths_to_check = vec![
-            // Path when run from project root
-            PathBuf::from("templates").join(template_subpath),
-            // Path when run from inside project directory
-            PathBuf::from("flutter_lazy/templates").join(template_subpath),
-            // Current directory path
-            PathBuf::from("./templates").join(template_subpath),
-            // Path relative to workspace root
-            PathBuf::from("../templates").join(template_subpath),
-        ];
-        
-        // Try to find the template path
-        let mut source_path = None;
-        
-        // First check the executable path
-        if template_path.exists() {
-            source_path = Some(template_path.clone());
-        } else {
-            // Then check all local paths
-            for path in &paths_to_check {
-                if path.exists() {
-                    source_path = Some(path.clone());
-                    break;
-                }
-            }
-        }
-        
-        // Return error if no template found
-        let source_path = source_path.ok_or_else(|| {
-            eprintln!("Searched in:");
-            eprintln!("  - {:?}", template_path);
-            for path in &paths_to_check {
-                eprintln!("  - {:?}", path);
-            }
-            anyhow::anyhow!("Template not found: {}", template_subpath)
-        })?;
-        
-        // Create destination if it doesn't exist
-        std::fs::create_dir_all(destination)?;
-        
-        let mut copy_options = CopyOptions::new();
-        copy_options.overwrite = true;
-        
-        // Copy directory contents
-        if source_path.exists() && source_path.is_dir() {
-            dir::copy(source_path, destination, &copy_options)?;
-        }
-        
-        Ok(())
+        crate::utils::copy_template_dir(template_subpath, destination)
     }
     
     fn copy_template_file(&self, template_path: &str, dest_path: &Path, replacements: &[(&str, &str)]) -> Result<()> {

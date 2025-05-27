@@ -8,6 +8,7 @@ use console::style;
 mod generator;
 mod utils;
 mod features;
+mod swagger;
 
 use generator::FlutterProjectGenerator;
 use features::{
@@ -17,6 +18,7 @@ use features::{
     create_notification_feature, 
     create_main_page_feature
 };
+use swagger::{SwaggerSource, generate_api_features};
 
 #[derive(Parser)]
 #[command(name = "flutter_lazy")]
@@ -41,6 +43,14 @@ enum Commands {
         /// Package name (org.example.app)
         #[arg(short, long)]
         package_name: Option<String>,
+        
+        /// Initialize with a Swagger/OpenAPI spec URL
+        #[arg(long = "api-url")]
+        api_url: Option<String>,
+        
+        /// Initialize with a local Swagger/OpenAPI spec file
+        #[arg(long = "api-file")]
+        api_file: Option<PathBuf>,
     },
     
     /// Creates a new feature in an existing project
@@ -89,13 +99,36 @@ enum Commands {
         #[arg(long, default_value = "false")]
         no_di: bool,
     },
+    
+    /// Creates a new feature based on a Swagger/OpenAPI specification
+    FromApi {
+        /// URL to the Swagger/OpenAPI JSON specification
+        #[arg(short, long)]
+        url: Option<String>,
+        
+        /// Path to a local Swagger/OpenAPI JSON file
+        #[arg(short, long)]
+        file: Option<PathBuf>,
+        
+        /// Project directory
+        #[arg(short, long)]
+        project: Option<PathBuf>,
+        
+        /// Only generate specific domains/tags (comma-separated)
+        #[arg(short, long)]
+        domains: Option<String>,
+        
+        /// Skip generating cubits/state management (data layer only)
+        #[arg(long, default_value = "true")]
+        data_only: bool,
+    },
 }
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::New { name, output, package_name } => {
+        Commands::New { name, output, package_name, api_url, api_file } => {
             // Interactive mode if name is not provided
             let project_name = match name {
                 Some(n) => n.clone(),
@@ -150,8 +183,8 @@ fn main() -> Result<()> {
                 }
             };
             
-            println!("\n{}",  style("Generating Flutter project...").bold().green());
-            let generator = FlutterProjectGenerator::new(&project_name, &Some(output_dir), &Some(package))?;
+            println!("\n{}", style("Generating Flutter project...").bold().green());
+            let generator = FlutterProjectGenerator::new(&project_name, &Some(output_dir), &Some(package), api_url, api_file)?;
             generator.generate()?;
             
             println!("\n✅ Project {} has been generated successfully!", style(&project_name).bold());
@@ -333,7 +366,59 @@ fn main() -> Result<()> {
             }
             
             println!("\n✅ Feature '{}' created successfully!", style(&feature_name).bold());
-        }
+        },
+        
+        Commands::FromApi { url, file, project, domains, data_only } => {
+            println!("{}", style("API Feature Generator").bold().cyan());
+            
+            // Get the Swagger URL or file path
+            let source = match (url, file) {
+                (Some(u), _) => {
+                    println!("Using Swagger API from URL: {}", style(u).bold());
+                    SwaggerSource::Url(u.clone())
+                },
+                (_, Some(f)) => {
+                    println!("Using Swagger API from file: {}", style(f.display()).bold());
+                    SwaggerSource::File(f.clone())
+                },
+                _ => {
+                    // Interactive mode - prompt for URL
+                    let input_url = dialoguer::Input::<String>::new()
+                        .with_prompt("Enter Swagger API URL")
+                        .interact()?;
+                    
+                    println!("Using Swagger API from URL: {}", style(&input_url).bold());
+                    SwaggerSource::Url(input_url)
+                }
+            };
+            
+            // Get the project directory
+            let project_dir = match project {
+                Some(path) => path.clone(),
+                None => {
+                    let dir_str = dialoguer::Input::<String>::new()
+                        .with_prompt("Enter project directory (press Enter for current directory)")
+                        .default(".".into())
+                        .interact()?;
+                    
+                    PathBuf::from(dir_str)
+                }
+            };
+            
+            // Filter domains if specified
+            let domain_list = domains.as_ref().map(|d| {
+                d.split(',')
+                    .map(|s| s.trim().to_string())
+                    .collect::<Vec<String>>()
+            });
+            
+            println!("\n{}", style("Generating API-based features...").bold().green());
+            
+            // Call the API feature generator
+            generate_api_features(&project_dir, source, domain_list, *data_only)?;
+            
+            println!("\n✅ API-based features have been generated successfully!");
+        },
     }
 
     Ok(())

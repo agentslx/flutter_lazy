@@ -13,6 +13,7 @@ A powerful CLI tool for bootstrapping Flutter projects with a clean, feature-fir
 - **Dependency Injection**: Sets up GetIt for service location and dependency injection
 - **Navigation**: Implements go_router for declarative routing
 - **Assets & Configurations**: Creates placeholder assets and Firebase configurations
+- **Validation System**: Automatically validates project and feature structure against best practices
 
 ## Installation
 
@@ -90,6 +91,41 @@ Each feature can include:
 - **UI Pages**: Screen layouts and widgets
 - **Routing**: Navigation configuration for the feature
 - **Dependency Injection**: Service locator setup
+
+### Generate Features from API
+
+```bash
+# Generate features from a Swagger/OpenAPI URL
+flutter_lazy from-api --url https://petstore.swagger.io/v2/swagger.json
+
+# Generate features from a local Swagger/OpenAPI file with specific domains
+flutter_lazy from-api --file ./swagger.json --domains users,products
+```
+
+### Validate Project Structure
+
+```bash
+# Validate entire project structure
+flutter_lazy validate --project ./my_project
+
+# Validate a specific feature
+flutter_lazy validate --project ./my_project --feature authentication
+
+# Validate a specific API feature
+flutter_lazy validate --project ./my_project --api-feature users
+```
+
+You can also disable validation when creating projects or features:
+
+```bash
+# Skip validation when creating a new project
+flutter_lazy new --name MyProject --no-validate
+
+# Skip validation when creating a feature
+flutter_lazy feature --name settings --no-validate
+```
+
+See [VALIDATION.md](./docs/VALIDATION.md) for more details about the validation system.
 
 ### Command Line Options
 

@@ -1,0 +1,21 @@
+required_directories:
+  - lib/features/{feature_name}/data/models
+  - lib/features/{feature_name}/data/datasources
+  - lib/features/{feature_name}/data/repository
+  - lib/core/entities/{feature_name}
+
+required_files:
+  - lib/features/{feature_name}/data/datasources/{feature_name}_remote_datasource.dart
+  - lib/features/{feature_name}/data/datasources/{feature_name}_local_datasource.dart
+  - lib/features/{feature_name}/data/repository/{feature_name}_repository.dart
+
+file_content_checks:
+  - file_path: lib/features/{feature_name}/data/repository/{feature_name}_repository.dart
+    expected_content:
+      - abstract class
+      - Repository
+      - implements
+  - file_path: lib/features/{feature_name}/data/datasources/{feature_name}_remote_datasource.dart
+    expected_content:
+      - abstract class
+      - RemoteDatasource

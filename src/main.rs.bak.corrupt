@@ -11,7 +11,20 @@ mod features;
 mod swagger;
 mod validation;
 
-use generator::FlutterProjectGenerator;
+u        Commands::Feature { 
+            name, 
+            project, 
+            minimal, 
+            no_state,
+            no_repository,
+            no_models,
+            no_pages,
+            no_services,
+            no_utils,
+            no_routing,
+            no_di,
+            no_validate,
+        } => {:FlutterProjectGenerator;
 use features::{
     FeatureParams, 
     create_feature, 
@@ -87,31 +100,31 @@ enum Commands {
         #[arg(long, default_value = "false")]
         no_validate: bool,
         
-        /// Create a minimal feature (UI only, no state management or data layer)
-        #[arg(long, default_value = "false")]
+        /// Whether to create a minimal feature without state management and repositories
+        #[arg(short, long, default_value = "false")]
         minimal: bool,
         
-        /// Skip state management (cubit/bloc) generation
+        /// Skip state management files (cubit/bloc)
         #[arg(long, default_value = "false")]
         no_state: bool,
         
-        /// Skip repository layer generation
+        /// Skip repository files
         #[arg(long, default_value = "false")]
         no_repository: bool,
         
-        /// Skip model classes generation
+        /// Skip model files
         #[arg(long, default_value = "false")]
         no_models: bool,
         
-        /// Skip UI pages generation
+        /// Skip UI pages
         #[arg(long, default_value = "false")]
         no_pages: bool,
         
-        /// Skip services generation
+        /// Skip services
         #[arg(long, default_value = "false")]
         no_services: bool,
         
-        /// Skip utilities generation
+        /// Skip utils directory
         #[arg(long, default_value = "false")]
         no_utils: bool,
         
@@ -257,50 +270,44 @@ fn main() -> Result<()> {
                 None => {
                     // Prepare a list of predefined and common feature types
                     let predefined_features = vec![
-                        "Authentication / Auth",
-                        "Notifications",
-                        "Main Page / Home",
-                        "Settings",
-                        "Profile",
-                        "User Management",
-                        "Product List",
-                        "Shopping Cart",
-                        "Payment",
-                        "Chat / Messaging",
-                        "Other (custom feature)"
+                        "auth (specialized)", 
+                        "notifications (specialized)", 
+                        "main_page (specialized)",
+                        "settings", 
+                        "profile",
+                        "payments",
+                        "onboarding",
+                        "custom (enter name)"
                     ];
                     
-                    // Ask user to select feature type
+                    // First ask if user wants to use a predefined feature
                     let selection = dialoguer::Select::new()
                         .with_prompt("Select feature type")
                         .items(&predefined_features)
-                        .default(0)
+                        .default(7) // Default to custom
                         .interact()?;
                     
-                    match selection {
-                        11 => {
-                            // User selected "Other", prompt for custom name
-                            dialoguer::Input::<String>::new()
-                                .with_prompt("Enter custom feature name")
-                                .validate_with(|input: &String| -> Result<(), String> {
-                                    if input.is_empty() {
-                                        Err("Feature name cannot be empty".into())
-                                    } else {
-                                        Ok(())
-                                    }
-                                })
-                                .interact()?
-                        },
-                        _ => {
-                            // For predefined features, extract just the feature name 
-                            // (e.g., "Authentication / Auth" -> "auth")
-                            let feature = &predefined_features[selection];
-                            match selection {
-                                0 => "auth".to_string(),
-                                1 => "notifications".to_string(),
-                                2 => "main_page".to_string(),
-                                _ => feature.split_whitespace().next().unwrap_or(feature).to_string()
-                            }
+                    if selection == 7 { // Custom feature
+                        dialoguer::Input::<String>::new()
+                            .with_prompt("Enter feature name (e.g., auth, settings, profile)")
+                            .validate_with(|input: &String| -> Result<(), String> {
+                                if input.is_empty() {
+                                    Err("Feature name cannot be empty".into())
+                                } else if input.contains(char::is_whitespace) {
+                                    Err("Feature name cannot contain spaces".into())
+                                } else {
+                                    Ok(())
+                                }
+                            })
+                            .interact()?
+                    } else {
+                        // Extract just the base name without the "(specialized)" text
+                        let feature = predefined_features[selection];
+                        match selection {
+                            0 => "auth".to_string(),
+                            1 => "notifications".to_string(),
+                            2 => "main_page".to_string(),
+                            _ => feature.split_whitespace().next().unwrap_or(feature).to_string()
                         }
                     }
                 }
@@ -486,7 +493,7 @@ fn main() -> Result<()> {
             // Run validation if not explicitly disabled
             if !no_validate {
                 // Validate API features if any domains were specified
-                let validation_passed = if let (Some(domains), SwaggerSource::File(_file_path)) = (&domain_list, &source) {
+                let validation_passed = if let (Some(domains), SwaggerSource::File(file_path)) = (&domain_list, &source) {
                     println!("\n{}", style("Validating API features...").bold().cyan());
                     
                     let mut all_passed = true;
@@ -589,4 +596,25 @@ fn main() -> Result<()> {
     }
 
     Ok(())
-}
+}           
+            // Get project directory
+            let project_dir = match project {
+                Some(path) => path.clone(),
+                None => {
+                    let dir_str = dialoguer::Input::<String>::new()
+                        .with_prompt("Enter project directory to validate (press Enter for current directory)")
+                        .default(".".into())
+                        .interact()?;
+                    
+                    PathBuf::from(dir_str)
+                }
+            };
+            
+            // Check if project directory exists and is a Flutter project
+            if !project_dir.exists() || !project_dir.is_dir() {
+                println!("\n{} Directory does not exist: {}", 
+                    style("❌").red(), project_dir.display());
+                return Ok(());
+            }
+            
+            if !project_dir.join("pubspec.yaml").

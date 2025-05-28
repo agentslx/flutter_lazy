@@ -1,0 +1,29 @@
+required_directories:
+  - lib/core/entities
+  - lib/core/failures
+  - lib/core/utils
+  - lib/features
+  - lib/modules/bloc
+  - lib/modules/rest_module
+  - lib/widgets/buttons
+  - assets/images
+  - assets/i18n
+
+required_files:
+  - lib/main.dart
+  - lib/flavors.dart
+  - lib/core/failures/failure.dart
+  - lib/core/utils/logger.dart
+  - pubspec.yaml
+
+file_content_checks:
+  - file_path: pubspec.yaml
+    expected_content:
+      - flutter_bloc:
+      - get_it:
+      - dio:
+      - assets:
+      - flutter_test:
+  - file_path: lib/flavors.dart
+    expected_content:
+      - enum Flavor

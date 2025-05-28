@@ -486,7 +486,7 @@ fn main() -> Result<()> {
             // Run validation if not explicitly disabled
             if !no_validate {
                 // Validate API features if any domains were specified
-                let validation_passed = if let (Some(domains), SwaggerSource::File(_file_path)) = (&domain_list, &source) {
+                let validation_passed = if let (Some(domains), SwaggerSource::File(file_path)) = (&domain_list, &source) {
                     println!("\n{}", style("Validating API features...").bold().cyan());
                     
                     let mut all_passed = true;

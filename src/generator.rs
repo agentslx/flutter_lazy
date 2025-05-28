@@ -11,6 +11,7 @@ use fs_extra::dir::CopyOptions;
 use crate::utils::copy_template_file;
 use crate::features::{create_auth_feature, create_notification_feature, create_main_page_feature};
 use crate::swagger;
+use crate::validation::{ValidationSystem, ValidationRules};
 
 pub struct ProjectConfig {
     pub name: String,
@@ -315,8 +316,6 @@ impl FlutterProjectGenerator {
         
         Ok(())
     }
-    
-    // ... rest of the implementation ...
     
     fn create_base_project(&self) -> Result<()> {
         println!("Creating base Flutter project...");
@@ -631,5 +630,63 @@ flutter_flavorizr:
             .unwrap()
             .progress_chars("#>-"));
         pb
+    }
+    
+    /// Validate that the generated project structure meets the expected requirements
+    pub fn validate(&self) -> Result<bool> {
+        println!("\n{}", style("Validating generated project...").bold().cyan());
+        
+        // Create default validation rules for a new project
+        let rules = ValidationSystem::default_new_project_rules();
+        
+        // Add flavor-specific rules
+        let mut flavor_rules = ValidationRules {
+            required_directories: Vec::new(),
+            required_files: self.config.flavors.iter()
+                .map(|flavor| format!("lib/main_{}.dart", flavor))
+                .collect(),
+            file_content_checks: Vec::new(),
+        };
+        
+        // Add feature-specific rules
+        for feature in &self.config.features {
+            match feature.as_str() {
+                "auth" => {
+                    flavor_rules.required_directories.push("lib/features/auth".to_string());
+                    flavor_rules.required_files.push("lib/features/auth/presentation/pages/login_page.dart".to_string());
+                },
+                "notifications" => {
+                    flavor_rules.required_directories.push("lib/features/notifications".to_string());
+                    flavor_rules.required_files.push("lib/features/notifications/domain/repositories/notification_repository.dart".to_string());
+                },
+                "main_page" => {
+                    flavor_rules.required_directories.push("lib/features/main_page".to_string());
+                    flavor_rules.required_files.push("lib/features/main_page/presentation/pages/main_page.dart".to_string());
+                },
+                _ => {}
+            }
+        }
+        
+        // Create combined rules
+        let combined_rules = ValidationRules {
+            required_directories: [rules.required_directories, flavor_rules.required_directories].concat(),
+            required_files: [rules.required_files, flavor_rules.required_files].concat(),
+            file_content_checks: rules.file_content_checks,
+        };
+        
+        // Create validation system with combined rules
+        let validation_system = ValidationSystem::new(combined_rules);
+        
+        // Run validation
+        let passed = validation_system.run_validation(&self.config.output_dir);
+        
+        if passed {
+            println!("{} Project validation successful!", style("✅").green().bold());
+        } else {
+            println!("{} Project validation failed. Please check the validation summary above.", 
+                style("❌").red().bold());
+        }
+        
+        Ok(passed)
     }
 }

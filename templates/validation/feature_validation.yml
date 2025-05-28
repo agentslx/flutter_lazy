@@ -1,0 +1,18 @@
+required_directories:
+  - lib/features/{feature_name}/presentation
+  - lib/features/{feature_name}/domain
+  - lib/features/{feature_name}/data
+
+required_files:
+  - lib/features/{feature_name}/presentation/pages/{feature_name}_page.dart
+  - lib/features/{feature_name}/domain/repositories/{feature_name}_repository.dart
+  
+# Content checks for standard feature structure
+file_content_checks:
+  - file_path: lib/features/{feature_name}/presentation/pages/{feature_name}_page.dart
+    expected_content:
+      - class
+      - StatelessWidget
+  - file_path: lib/features/{feature_name}/domain/repositories/{feature_name}_repository.dart
+    expected_content:
+      - abstract class
